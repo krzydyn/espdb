@@ -1,0 +1,13 @@
+CREATE TABLE person (id INTEGER PRIMARY KEY,name VARCHAR,gender char(1),number char(1),conj_form INTEGER,UNIQUE(name));
+INSERT INTO person (name,gender,number,conj_form) VALUES ('yo','b','s',1);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('tú','b','s',2);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('él','m','s',3);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('ella','f','s',3);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('usted','b','s',3);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('nosotros','m','p',4);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('nosotras','f','p',4);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('vosotros','m','p',5);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('vosotras','f','p',5);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('ellos','m','p',6);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('ellas','f','p',6);
+INSERT INTO person (name,gender,number,conj_form) VALUES ('ustedes','b','p',6);

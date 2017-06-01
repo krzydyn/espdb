@@ -1,0 +1,68 @@
+<html>
+<!--
+ https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.htm
+ https://codepen.io/matt-west/pen/wGzuJ
+ -->
+<body>
+<form action="#">
+<input type="text" value="Llegar donde hay mucho maiz">
+<select>
+</select>
+<button type="submit">Say It</button>
+</form>
+
+<script type="text/javascript">
+var synth = window.speechSynthesis;
+
+var inputForm = document.querySelector('form');
+var inputTxt = document.querySelector('input');
+var voiceSelect = document.querySelector('select');
+
+var populateDone=0;
+function populateVoiceList() {
+  voices = synth.getVoices();
+  for(i = populateDone; i < voices.length ; i++) {
+    var option = document.createElement('option');
+    var name = voices[i].name.replace('Google','');
+
+   if(voices[i].default) {
+        option.textContent = '['+name + ' (' + voices[i].lang + ')]';
+    }
+    else {
+        option.textContent = name + ' (' + voices[i].lang + ')';
+    }
+
+    option.setAttribute('data-lang', voices[i].lang);
+    option.setAttribute('data-name', voices[i].name);
+    voiceSelect.appendChild(option);
+	}
+	populateDone=voices.length;
+}
+
+populateVoiceList();
+if (synth.onvoiceschanged !== undefined) {
+  synth.onvoiceschanged = populateVoiceList;
+}
+
+inputForm.onsubmit = function(event) {
+  event.preventDefault();
+
+  var utterThis = new SpeechSynthesisUtterance(inputTxt.value);
+  var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+  for(i = 0; i < voices.length ; i++) {
+    if(voices[i].name === selectedOption) {
+		//utterThis.voice = voices[i];
+		utterThis.voiceURL = voices[i].voiceURL;
+		utterThis.lang = voices[i].lang;
+		console.log(i+':'+utterThis.voiceURL);
+    }
+  }
+  synth.speak(utterThis);
+  inputTxt.blur();
+}
+</script>
+
+</body></html>
+
+
+

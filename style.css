@@ -1,0 +1,114 @@
+* {
+font-size:15px;
+font-family:Helvetica,Verdana,Arial,Times,sans-serif;
+}
+body {
+	background:#aaa;
+	padding:15px;margin:0;}
+h1{text-align:center; display:none;}
+img {margin:0;border:0;}
+p {text-align:left;}
+a,a:visited,a:focus {text-decoration:none;color:#00C;}
+a:hover {text-decoration:none;color:#3FA;background-color:#777;}
+input,textarea,select {
+	font-size:12pt;
+	border:1px solid black;
+	padding:0px;
+	margin:0px;
+	background-color:#DDD;
+}
+option{font-size:8pt;}
+button,input[type="button"],input[type="submit"],input[type="reset"] {
+	padding:1px 2px;
+	cursor:pointer;
+	background-color:#AAA;
+}
+table {margin:0;padding:0;border:none;empty-cells:show;}
+td {vertical-align: top;}
+td,th {margin:0;padding:0;border:0;}
+tr.sp>td {background-color:white;padding:2px;}
+fieldset{
+	display:inline;
+	background-color:#BBB;
+	border:1px solid grey;
+}
+fieldset>legend{
+	font-weight:bold;
+	background-color:#BBB;
+	border:1px solid grey;
+	border-bottom:0px;
+	padding:1px 5px;
+}
+fieldset>table>tbody>tr>td{
+	padding:2px 5px;
+}
+
+.title {font-weight:bold;}
+.nowrap {white-space:nowrap;}
+.none {display:none;}
+.right {text-align:right;}
+.absr {position:absolute;right:100px;}
+.absr>div{
+	white-space:nowrap;
+	display:inline;
+	position:relative;
+	right:-100%;
+}
+.abs {position:absolute;left:50%;}
+.abs>div{
+	display:inline;
+	position:relative;
+	left:-50%;
+}
+
+.sysmsg {
+	z-index:10;
+	top:10px;
+	display:block;
+	text-align:left;
+	margin:auto auto;
+}
+.sysmsg .error{ background-color: red; }
+.sysmsg .warn{ background-color: yellow; }
+.sysmsg .info{ background-color: #0b0; }
+
+.db{border:1px solid gray;}
+.db>caption{
+	padding: 1px 10px;
+	text-align:left;font-weight:bold;
+	white-space:nowrap;
+}
+.db>tbody>tr.head{
+	background-color:#C8C8C8;
+}
+.db>tbody>tr.row{cursor:pointer;}
+.db>tbody>tr.row:hover{background-color:#D8D8D8;}
+.db>tbody>tr.row0{background-color:#A8A8A8;}
+.db>tbody>tr.row1{background-color:#B8B8B8;}
+.db>tbody>tr>* {
+	padding: 2px 5px;
+	border-left:1px solid #555;
+	border-bottom:1px dotted #777;
+}
+.db>tbody>tr>*:first-child { border-left:0; }
+
+.item {border-collapse:collapse;border:0px;}
+.item tr td,.item tr th {border:0;padding:1px 5px 1px 5px;vertical-align:middle;text-align:left;}
+.b1 tr td,.b1 tr th {border:1px solid #000;padding:1px 5px 1px 5px;vertical-align:top;text-align:left;}
+
+.bigsample {display:none;position:absolute;}
+.bigsample img {position:relative;top:-80px;left:20px;}
+td.icon{text-align:center;vertical-align:middle;}
+a.icon {color:#000;display:inline;background-color:transparent;}
+a.icon:hover .bigsample {display:inline;}
+.recipe .name {width:250px;}
+.recipe .author {width:60px;}
+.recipe .category {width:100px;}
+input.name {width:600px;}
+input.icon {width:600px;}
+
+div.editor
+{
+	background:#fff;
+	border:#696969 solid 1px;
+}
