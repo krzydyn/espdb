@@ -1,0 +1,1 @@
+CREATE TABLE word_group (id INTEGER PRIMARY KEY,word_core VARCHAR(255));
