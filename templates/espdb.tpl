@@ -30,7 +30,7 @@ var onPartReady = function(rc,tx) {
 	try{
 		var parts = JSON.parse(tx);
 		console.log(parts);
-	}catch(e) { console.log('cant parse: '+tx); }
+	}catch(e) { console.log('cannot parse: '+tx); }
 }
 
 function loadParts() {

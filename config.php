@@ -3,9 +3,16 @@ date_default_timezone_set("Europe/Warsaw");
 $config=array();
 $config["appname"]="espanol";
 
-ini_set('display_errors','On');
-//ini_set('error_log','cache/error.log');
-//
+if ($_SERVER["HTTP_HOST"]=="localhost"){
+	error_reporting(E_ALL);
+	ini_set('display_errors','On');
+}
+else {
+	error_reporting(E_ALL&~E_NOTICE);
+	ini_set('display_errors','Off');
+	ini_set('error_log','cache/error.log');
+}
+
 // paths setup
 $config["cmslib"]=strtr(dirname(__FILE__),"\\","/")."/../cms/lib/";
 $config["cmsurl"]="/cms/";
@@ -23,7 +30,7 @@ $config["fckconfig"]="FCKconfig.js"; //relative to rooturl
 // db setup
 $config["debug"]["query"]="y";
 $config["dbtype"]="sqlite3";
-$config["dbname"]="db/esp.sqlite";
+$config["dbname"]="db/espdb.sqlite";
 
 $config["sitetitle"]="Espanol DB";
 $config["lang"]="pl";
