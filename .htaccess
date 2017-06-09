@@ -1,5 +1,9 @@
+# Apache config (not lighttpd!!!)
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-#RewriteRule ^$ index2.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !=index.php
 RewriteRule .* index.php [QSA,L]
+
+#alternative (everyfing handle with index.php)
+#RewriteRule ^((?!index\.php).+)$ /index.php [L]

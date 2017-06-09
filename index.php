@@ -1,27 +1,26 @@
 <?php
-require_once("espdb.php");
+require_once("config.php");
+require_once($config["cmslib"]."router.php");
+require_once($config["cmslib"]."request.php");
 
-try{
-	$a = new EspDB();
-	$a->initialize();
-	$a->process();
-	unset($a);
-}
-catch(Exception $e)
-{
-	echo "Exception: ".$e->getMessage().";";
-	//$req->setval("error",$e->getMessage());
-}
-/*$req=Request::getInstance();
+$r = new Router();
+$r->addRoute("GET","/.*css",function() {
+	readfile("css".Request::getInstance()->getval("uri"));
+});
+$r->addRoute("GET","/.*js",function() {
+	readfile("js".Request::getInstance()->getval("uri"));
+});
+$r->addRoute("GET","/index2.php",function() {
+	echo "index2";
+});
+$r->addRoute("GET","/.*",function() {
+	echo "/";
+});
+$r->addRoute("","/.*",function() {
+	echo "default (can't handle)";
+});
+
 echo "<pre>";
-print_r($req);
-exit;
-
-$srv=$req->getval("srv");
-echo "qs=".$srv["QUERY_STRING"]."\n";
-echo "req=".$srv["REQUEST_URI"]."\n";
- */
-
-$t = new TemplateEngine();
-$t->load("espdb.tpl");
+//print_r(Request::getInstance()->getval("srv"));
+$r->route(Request::getInstance()->getval("req.method"), Request::getInstance()->getval("uri"));
 ?>
