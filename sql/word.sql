@@ -4,4 +4,6 @@
 --      noun (Gender(m,f),Number(s,p),Pronoun(zaimek),Article(rodzajnik))
 --      adjective ()
 --      adverb ()
-CREATE TABLE word (id INTEGER PRIMARY KEY,word VARCHAR(255),attrs varchar(10),UNIQUE(word));
+CREATE TABLE word_es (id INTEGER PRIMARY KEY,word VARCHAR(255),attrs VARCHAR(10),UNIQUE(word));
+CREATE TABLE word_pl (id INTEGER PRIMARY KEY,word VARCHAR(255),attrs VARCHAR(10),UNIQUE(word));
+CREATE TABLE word_en (id INTEGER PRIMARY KEY,word VARCHAR(255),attrs VARCHAR(10),UNIQUE(word));
