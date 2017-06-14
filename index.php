@@ -5,7 +5,13 @@ require_once($config["cmslib"]."request.php");
 
 $r = new Router();
 $r->addRoute("GET","/.*css",function() {
-	readfile("css".Request::getInstance()->getval("uri"));
+	$req=Request::getInstance();
+	$f=".".$req->getval("uri");
+	if (file_exists($f))
+		readfile($f);
+	else {
+		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+	}
 });
 $r->addRoute("GET","/.*js",function() {
 	readfile("js".Request::getInstance()->getval("uri"));
@@ -20,11 +26,11 @@ $r->addRoute("","",function() {
 	echo "default (can't handle)";
 });
 
+$r->route(Request::getInstance()->getval("method"), Request::getInstance()->getval("uri"));
+
 echo "<pre>";
+print_r(Request::getInstance()->getval("req"));
 echo "root URI=".Request::getInstance()->getval("cfg.rooturl")."\n";
 echo "absolute URI=".Request::getInstance()->getval("abs-uri")."\n";
 echo "local URI=".Request::getInstance()->getval("uri")."\n";
-print_r(Request::getInstance()->getval("req"));
-//print_r(Request::getInstance()->getval("srv"));
-$r->route(Request::getInstance()->getval("method"), Request::getInstance()->getval("uri"));
 ?>
