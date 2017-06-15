@@ -1,13 +1,15 @@
 * {
-font-size:15px;
-font-family:Helvetica,Verdana,Arial,Times,sans-serif;
+	font-size:15px;
+	font-family:Helvetica,Verdana,Arial,Times,sans-serif;
+}
+@media screen and (max-width:481px){
 }
 body {
 	background:#aaa;
-	padding:15px;margin:0;}
-h1{text-align:center; display:none;}
+	padding:3px;margin:0;}
+h1{text-align:center;}
 img {margin:0;border:0;}
-p {text-align:left;}
+p {text-align:left; margin:2px;}
 a,a:visited,a:focus {text-decoration:none;color:#00C;}
 a:hover {text-decoration:none;color:#3FA;background-color:#777;}
 input,textarea,select {
@@ -44,6 +46,7 @@ fieldset>table>tbody>tr>td{
 }
 
 .title {font-weight:bold;}
+.content {text-align:center;}
 .nowrap {white-space:nowrap;}
 .none {display:none;}
 .right {text-align:right;}
@@ -101,11 +104,6 @@ fieldset>table>tbody>tr>td{
 td.icon{text-align:center;vertical-align:middle;}
 a.icon {color:#000;display:inline;background-color:transparent;}
 a.icon:hover .bigsample {display:inline;}
-.recipe .name {width:250px;}
-.recipe .author {width:60px;}
-.recipe .category {width:100px;}
-input.name {width:600px;}
-input.icon {width:600px;}
 
 div.editor
 {
