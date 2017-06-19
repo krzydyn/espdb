@@ -2,7 +2,7 @@
 require_once("config.php");
 require_once($config["cmslib"]."modules.php");
 
-function addWords() {
+function api_addwords() {
 	$a=Request::getInstance()->getval("req");
 	$pl=@$a["pl"];
 	$es=@$a["es"];

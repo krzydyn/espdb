@@ -28,13 +28,17 @@ $r->addRoute("GET","/ajax\\.js",function() {
 });
 
 //valid php scripts
-$r->addRoute("","/addWords.*",function() {
+$r->addRoute("","/api/(\\w+).*",function() {
 	global $config;
-	require_once("./addwords.php");
-	addWords();
+	$req=Request::getInstance();
+	$args = func_get_args();
+	$func = strtolower($args[1]);
+	require_once("./api/".$func.".php");
+	$func = "api_".$func;
+	$func($req->getval("req.word_es"));
 });
 
-$r->addRoute("GET","/",function() {
+$r->addRoute("GET","/.*",function() {
 global $config;
 require_once("espdb.php");
 try{
