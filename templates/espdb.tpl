@@ -63,6 +63,7 @@ function translateWord() {
 		var v = $(arguments[i]).value;
 		if (!v) continue;
 		if (n>0) {w+='&';u+=',';}
+		v=v.trim().toLowerCase();
 		u+=v;
 		w+=arguments[i]+'='+v;
 		++n;
@@ -78,7 +79,7 @@ function addWords() {
 		var v = $(arguments[i]).value;
 		if (!v) continue;
 		if (n>0) w+='&';
-		w+=arguments[i]+'='+v;
+		w+=arguments[i]+'='+v.trim().toLowerCase();
 		++n;
 	}
 	console.log('put '+w);
