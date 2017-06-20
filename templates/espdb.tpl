@@ -12,27 +12,18 @@
 <div class="content">
 <div class="pack left">
 	<div class="searchbar border-in">
+	<form><!-- put inside form tag for auto-submit with Enter key -->
 	<span class="label">Enter in spanish:</span><br>
 	<span class="es"><input id="word_es" type="text" size="20" name="es" value="<%val("req.word_es")%>"></span>
-	<span class="button"><input type="button" value="search" onclick="javascript:translateWord('word_es')"></span>
-	</div>
+	<span class="button"><input type="submit" value="search" onclick="javascript:translateWord('word_es');return false;"></span>
+	</form>
+	</div><br>
 	<div id="result" class="result"></div>
 </div>
 </div>
 <br>
 
 <script type="text/javascript">
-var ajax = new Ajax();
-var onPartReady = function(rc,tx) {
-	if (rc != 200) {
-		console.log('ready rc='+rc);
-		return ;
-	}
-	try{
-		var parts = JSON.parse(tx);
-		console.log(parts);
-	}catch(e) { console.log('cannot parse: '+tx); }
-}
 var onTranslateReady = function(rc,tx) {
 	if (rc != 200) {
 		console.log('ready rc='+rc);
@@ -67,21 +58,14 @@ var onTranslateReady = function(rc,tx) {
 			txt+='</table>';
 		}
 	}catch(e) {
-		console.log('cannot parse response\n'+e);
+		console.log(e.stack);
 	}
 	$('result').innerHTML = txt;
 }
-var onAddWordReady = function(rc,tx) {
-}
 
+var ajax = new Ajax();
 function loadFromArgs() {
 	translateWord('word_es');
-}
-
-function saveOfflineExample() {
-	localStorage.colorSetting = '#a4509b';
-	localStorage['colorSetting'] = '#a4509b';
-	localStorage.setItem('colorSetting', '#a4509b');
 }
 
 function translateWord() {
@@ -107,6 +91,7 @@ function translateWord() {
 	//history.pushState('', document.title, '<%val("cfg.rooturl")%>'+u);
 	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+u);
 }
+
 function addWords() {
 	var w='';
 	var n=0;
@@ -120,7 +105,6 @@ function addWords() {
 	console.log('put '+w);
 	ajax.async('put','<%val("cfg.rooturl")%>api/addwords?'+w,onAddWordReady);
 }
-
 </script>
 </body></html>
 

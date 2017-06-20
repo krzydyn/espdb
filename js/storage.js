@@ -1,7 +1,6 @@
 function storageAvailable(type) {
     try {
-        var storage = window[type],
-            x = '__storage_test__';
+        var storage = window[type], x = '__storage_test__';
         storage.setItem(x, x);
         storage.removeItem(x);
         return true;
@@ -21,3 +20,10 @@ function storageAvailable(type) {
             storage.length !== 0;
     }
 }
+
+function saveOfflineExample() {
+	localStorage.colorSetting = '#a4509b'; //method 1
+	localStorage['colorSetting'] = '#a4509b'; //method 2
+	localStorage.setItem('colorSetting', '#a4509b');//method 3
+}
+
