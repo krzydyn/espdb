@@ -21,6 +21,12 @@ $r->addRoute("GET","/.*(css|js)",function() {
 	}
 });
 
+$r->addRoute("GET","(/icony/.*)",function() {
+	$args = func_get_args();
+	$f="..".$args[1];
+	header("Content-Type: ".make_content_type($f));
+	readfile($f);
+});
 $r->addRoute("GET","/ajax\\.js",function() {
 	$f="../ajax.js";
 	header("Content-Type: ".make_content_type($f));
@@ -36,7 +42,12 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	require_once("./api/".$func.".php");
 	$func = "api_".$func;
 	if ($func=="api_translate") {
-		$func("spa","pol",$req->getval("req.word_es"));
+		$lang=$req->getval("req.lang");
+		$dst="pol";
+		if ($lang=="pl") {$lang="pol";$dst="spa";}
+		else if ($lang=="en") {$lang="eng";$dst="spa";}
+		else {$lang="spa";}
+		$func($lang,$dst,$req->getval("req.word"));
 	}
 });
 

@@ -18,15 +18,17 @@ button,input,textarea,select {
 	font-size:14pt;
 	border:1px solid black;
 	border-radius:5px;
-	padding:1px 2px;
-	margin:0px;
+	padding:1px 4px;
+	margin:1px;
 	background-color:#DDD;
 }
-option{font-size:8pt;}
 button,input[type="button"],input[type="submit"],input[type="reset"] {
 	cursor:pointer;
 	background-color:#AAA;
+	font-size:12pt;
 }
+select {font-size:12pt;}
+
 table {margin:0;padding:0;border:none;empty-cells:show;}
 td {vertical-align: top;}
 td,th {margin:0;padding:0;border:0;}

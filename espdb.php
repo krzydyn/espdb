@@ -58,7 +58,8 @@ class EspDB extends Application {
 		$this->authenticate();
 		$uri = $this->getval("uri");
 		if (preg_match("/^\\/(\\w+)$/", $uri, $match)) {
-			$this->setval("req.word_es", $match[1]);
+			$this->setval("req.lang", "es");
+			$this->setval("req.word", $match[1]);
 			$this->setval("action","translate");
 		}
 		parent::process();

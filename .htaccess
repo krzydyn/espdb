@@ -3,7 +3,7 @@
 	Deny from all
 </FilesMatch>
 
-#this makes server error 500
+# this makes server error 500
 #AllowOverride All
 
 #Options +FollowSymlinks
@@ -14,8 +14,11 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !=index.php
 RewriteRule .* index.php [QSA,L]
 
-#alternative (everyfing handle with index.php)
+# alternative (everyfing handle with index.php)
 #RewriteRule ^((?!index\.php).+)$ /index.php [QSA,L]
 
-#lighttpd configuration
-# url.rewrite-once += ( "^/kysoft/espdb[^?]*(\?.*)?$" => "/kysoft/espdb/index.php$1" )
+# lighttpd configuration
+#url.redirect += ("^/kysoft/espdb([^/].*)$" => "/kysoft/espdb/$1")
+#url.rewrite-once += ( "^/kysoft/espdb/.*?(\?.*)?$" => "/kysoft/espdb/index.php$1" )
+#url.rewrite-once += ( "^/kysoft/espdb(.*)?$" => "/kysoft/espdb/$1" )
+

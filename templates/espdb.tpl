@@ -13,9 +13,15 @@
 <div class="pack left">
 	<div class="searchbar border-in">
 	<form><!-- put inside form tag for auto-submit with Enter key -->
-	<span class="label">Enter in spanish:</span><br>
-	<span class="es"><input id="word_es" type="text" size="20" name="es" value="<%val("req.word_es")%>"></span>
-	<span class="button"><input type="submit" value="search" onclick="javascript:translateWord('word_es');return false;"></span>
+	<span class="label">Enter in</span>
+	<select id="lang" name="lang">
+		<option value="es"><img src="<%val("cfg.rooturl")%>icony/flags-lg/es-lgflag.gif">español</option>
+		<option value="pl"><img src="<%val("cfg.rooturl")%>icony/flags-lg/pl-lgflag.gif">polski</option>
+		<option value="en"><img src="<%val("cfg.rooturl")%>icony/flags-lg/en-lgflag.gif">english</option>
+	</select>
+	<br>
+	<span class="es"><input id="phrase" type="text" size="20" name="word" value="<%val("req.word")%>"></span>
+	<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
 	</form>
 	</div><br>
 	<div id="result" class="result"></div>
@@ -33,13 +39,14 @@ var onTranslateReady = function(rc,tx) {
 	try{
 		var t = JSON.parse(tx);
 		console.log(t);
+		var dst = t.dest;
 		var tuc = t['tuc'];
 		if (tuc.length==0) txt+='Phrase not found';
 		else {
 			var cnt=1;
 			txt+='<table>';
 			for (var i=0; i < tuc.length; ++i) {
-				if (tuc[i].phrase && tuc[i].phrase.language=='pl') {
+				if (tuc[i].phrase && tuc[i].phrase.language==dst) {
 					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+tuc[i].phrase.text+'</td></tr>';
 					++cnt;
 				}
@@ -65,31 +72,22 @@ var onTranslateReady = function(rc,tx) {
 
 var ajax = new Ajax();
 function loadFromArgs() {
-	translateWord('word_es');
+	translateWord();
 }
 
 function translateWord() {
-	var w='';
-	var n=0;
-	var u=''
-	for (var i=0; i < arguments.length; ++i) {
-		var v = $(arguments[i]).value;
-		if (!v) continue;
-		if (n>0) {w+='&';u+=',';}
-		v=v.trim().toLowerCase();
-		u+=v;
-		w+=arguments[i]+'='+v;
-		++n;
-	}
-	if (u) {
-		document.title = 'KrzychoTeka - '+u;
-		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+w,onTranslateReady);
+	var lang=$('lang').value;
+	var w=$('phrase').value.trim().toLowerCase();
+	if (w) {
+		document.title = 'KrzychoTeka - '+w;
+		var u='word='+w+'&lang='+lang;
+		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+u,onTranslateReady);
 	}
 	else {
 		document.title = 'KrzychoTeka';
 	}
-	//history.pushState('', document.title, '<%val("cfg.rooturl")%>'+u);
-	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+u);
+	//history.pushState('', document.title, '<%val("cfg.rooturl")%>'+w);
+	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+w);
 }
 
 function addWords() {
