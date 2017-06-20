@@ -35,7 +35,9 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	$func = strtolower($args[1]);
 	require_once("./api/".$func.".php");
 	$func = "api_".$func;
-	$func($req->getval("req.word_es"));
+	if ($func=="api_translate") {
+		$func("spa","pol",$req->getval("req.word_es"));
+	}
 });
 
 $r->addRoute("GET","/.*",function() {

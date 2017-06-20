@@ -1,6 +1,10 @@
 <?php
-function api_translate($w) {
-	echo json_encode(array($w, "OK"));
+require_once($config["cmslib"]."rest.php");
+function api_translate($lang_src,$lang_dst,$phrase) {
+	//echo json_encode(array($w, "OK"));
+	$r=apicall("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	//echo json_encode($r);
+	echo $r;
 }
 
 //external translation services:

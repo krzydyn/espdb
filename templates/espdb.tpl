@@ -7,17 +7,17 @@
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
   <script src="<%val("cfg.rooturl")%>ajax.js"></script>
 </head>
-<body onload="loadParts()">
+<body onload="loadFromArgs()">
 <h1>KrzychoTeka</h1>
 <div class="content">
-<div class="search">
+<div class="pack left">
+	<div class="searchbar border-in">
+	<span class="label">Enter in spanish:</span><br>
 	<span class="es"><input id="word_es" type="text" size="20" name="es" value="<%val("req.word_es")%>"></span>
-	<span class="buttons"><input type="button" value="search" onclick="javascript:translateWord('word_es')"></span>
+	<span class="button"><input type="button" value="search" onclick="javascript:translateWord('word_es')"></span>
+	</div>
+	<div id="result" class="result"></div>
 </div>
-<%if(valExist("content")){%>
-<div class="<%val2class("content")%>">
-</div>
-<%}%>
 </div>
 <br>
 
@@ -38,15 +38,44 @@ var onTranslateReady = function(rc,tx) {
 		console.log('ready rc='+rc);
 		return ;
 	}
+	var txt='';
 	try{
 		var t = JSON.parse(tx);
 		console.log(t);
-	}catch(e) { console.log('cannot parse: '+tx); }
+		var tuc = t['tuc'];
+		if (tuc.length==0) txt+='Phrase not found';
+		else {
+			var cnt=1;
+			txt+='<table>';
+			for (var i=0; i < tuc.length; ++i) {
+				if (tuc[i].phrase && tuc[i].phrase.language=='pl') {
+					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+tuc[i].phrase.text+'</td></tr>';
+					++cnt;
+				}
+				/*if (tuc[i].meanings) {
+					var m = tuc[i].meanings;
+					//txt+='<div class="meanings">';
+					for (var j=0; j < m.length; ++j) {
+						if (m[j].language=='pl') {
+							txt+=cnt+'. '+m[j].text + '<br>';
+							++cnt;
+						}
+					}
+					//txt+='</div>';
+				}*/
+			}
+			txt+='</table>';
+		}
+	}catch(e) {
+		console.log('cannot parse response\n'+e);
+	}
+	$('result').innerHTML = txt;
 }
 var onAddWordReady = function(rc,tx) {
 }
 
-function loadParts() {
+function loadFromArgs() {
+	translateWord('word_es');
 }
 
 function saveOfflineExample() {
@@ -68,9 +97,15 @@ function translateWord() {
 		w+=arguments[i]+'='+v;
 		++n;
 	}
-	//history.pushState('', 'KrzychoTeka: '+u, '<%val("cfg.rooturl")%>'+u);
-	history.replaceState('', 'KrzychoTeka: '+u, '<%val("cfg.rooturl")%>'+u);
-	ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+w,onTranslateReady);
+	if (u) {
+		document.title = 'KrzychoTeka - '+u;
+		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+w,onTranslateReady);
+	}
+	else {
+		document.title = 'KrzychoTeka';
+	}
+	//history.pushState('', document.title, '<%val("cfg.rooturl")%>'+u);
+	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+u);
 }
 function addWords() {
 	var w='';
