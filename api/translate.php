@@ -2,8 +2,8 @@
 require_once($config["cmslib"]."rest.php");
 function api_translate($lang_src,$lang_dst,$phrase) {
 	//echo json_encode(array($w, "OK"));
+	logstr("api_translate(".$lang_src.",".$lang_dst.",".$phrase.")");
 	$r=apicall("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
-	//echo json_encode($r);
 	echo $r;
 }
 
@@ -15,4 +15,5 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 //3. https://cloud.google.com/translate/docs/reference/rest
 //   https://translation.googleapis.com
 //4. https://tech.yandex.com/translate/
+//5. http://pl.pons.com/specials/api (need registration)
 ?>

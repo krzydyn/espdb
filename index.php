@@ -47,7 +47,7 @@ $r->addRoute("","/api/(\\w+).*",function() {
 		if ($lang=="pl") {$lang="pol";$dst="spa";}
 		else if ($lang=="en") {$lang="eng";$dst="spa";}
 		else {$lang="spa";}
-		$func($lang,$dst,$req->getval("req.word"));
+		$func($lang,$dst,$req->getval("req.phrase"));
 	}
 });
 

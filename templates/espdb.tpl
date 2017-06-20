@@ -13,14 +13,14 @@
 <div class="pack left">
 	<div class="searchbar border-in">
 	<form><!-- put inside form tag for auto-submit with Enter key -->
-	<span class="label">Enter in</span>
+	<span class="label">Enter phrase in</span>
 	<select id="lang" name="lang">
-		<option value="es"><img src="<%val("cfg.rooturl")%>icony/flags-lg/es-lgflag.gif">español</option>
-		<option value="pl"><img src="<%val("cfg.rooturl")%>icony/flags-lg/pl-lgflag.gif">polski</option>
-		<option value="en"><img src="<%val("cfg.rooturl")%>icony/flags-lg/en-lgflag.gif">english</option>
+		<option value="es" <%if(val("req.lang")=="es") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/es-lgflag.gif">español</option>
+		<option value="pl" <%if(val("req.lang")=="pl") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/pl-lgflag.gif">polski</option>
+		<option value="en" <%if(val("req.lang")=="en") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/en-lgflag.gif">english</option>
 	</select>
 	<br>
-	<span class="es"><input id="phrase" type="text" size="20" name="word" value="<%val("req.word")%>"></span>
+	<span class="es"><input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>"></span>
 	<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
 	</form>
 	</div><br>
@@ -76,18 +76,18 @@ function loadFromArgs() {
 }
 
 function translateWord() {
-	var lang=$('lang').value;
+	var lang=$('lang').value.trim().toLowerCase();
 	var w=$('phrase').value.trim().toLowerCase();
 	if (w) {
 		document.title = 'KrzychoTeka - '+w;
-		var u='word='+w+'&lang='+lang;
+		var u='phrase='+w+'&lang='+lang;
 		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+u,onTranslateReady);
 	}
 	else {
 		document.title = 'KrzychoTeka';
 	}
-	//history.pushState('', document.title, '<%val("cfg.rooturl")%>'+w);
-	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+w);
+	//history.pushState('', document.title, );
+	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+lang+'/'+w);
 }
 
 function addWords() {
@@ -105,4 +105,3 @@ function addWords() {
 }
 </script>
 </body></html>
-

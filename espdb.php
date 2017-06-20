@@ -57,10 +57,10 @@ class EspDB extends Application {
 	function process(){
 		$this->authenticate();
 		$uri = $this->getval("uri");
-		if (preg_match("/^\\/(\\w+)$/", $uri, $match)) {
-			$this->setval("req.lang", "es");
-			$this->setval("req.word", $match[1]);
-			$this->setval("action","translate");
+		if (preg_match("/^\\/(\\w+)\\/([^\\/]+)$/", $uri, $match)) {
+			$this->setval("req.lang", $match[1]);
+			$this->setval("req.phrase", urldecode($match[2]));
+			//$this->setval("action","translate");
 		}
 		parent::process();
 	}
