@@ -1,9 +1,15 @@
 <?php
 require_once($config["cmslib"]."rest.php");
 function api_translate($lang_src,$lang_dst,$phrase) {
+	//1. check phrase in sqldb
+	//2. if exists echo json_encode and return
 	//echo json_encode(array($w, "OK"));
 	logstr("api_translate(".$lang_src.",".$lang_dst.",".$phrase.")");
 	$r=apicall("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	//1. parse json response
+	//2. reformat
+	//3. add to sqldb
+	//4. echo json_encode
 	echo $r;
 }
 
