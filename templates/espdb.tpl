@@ -23,7 +23,8 @@
 	<span class="es"><input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>"></span>
 	<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
 	</form>
-	</div><br>
+	</div>
+	<div id="source" class="source right"></div>
 	<div id="result" class="result"></div>
 </div>
 </div>
@@ -36,37 +37,30 @@ var onTranslateReady = function(rc,tx) {
 		return ;
 	}
 	var txt='';
+	var dbsrc='';
 	try{
 		var t = JSON.parse(tx);
 		console.log(t);
+		dbsrc = 'source: '+t.source;
 		var dst = t.dest;
-		var tuc = t['tuc'];
-		if (tuc.length==0) txt+='Phrase not found';
+		var phrase = t.phrase;
+		if (phrase.length==0) txt+='Phrase not found';
 		else {
 			var cnt=1;
 			txt+='<table>';
-			for (var i=0; i < tuc.length; ++i) {
-				if (tuc[i].phrase && tuc[i].phrase.language==dst) {
-					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+tuc[i].phrase.text+'</td></tr>';
+			for (var i=0; i < phrase.length; ++i) {
+				if (phrase[i].lang==dst) {
+					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+phrase[i].text+'</td></tr>';
 					++cnt;
 				}
-				/*if (tuc[i].meanings) {
-					var m = tuc[i].meanings;
-					//txt+='<div class="meanings">';
-					for (var j=0; j < m.length; ++j) {
-						if (m[j].language=='pl') {
-							txt+=cnt+'. '+m[j].text + '<br>';
-							++cnt;
-						}
-					}
-					//txt+='</div>';
-				}*/
 			}
 			txt+='</table>';
 		}
 	}catch(e) {
+		if (e instanceof SyntaxError) console.log(tx);
 		console.log(e.stack);
 	}
+	$('source').innerHTML = dbsrc;
 	$('result').innerHTML = txt;
 }
 

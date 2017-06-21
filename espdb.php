@@ -21,9 +21,6 @@ class Person extends ModelObject {
 class EspDB extends Application {
 	function initialize() {
 		$db=DB::connectDefault();
-		$this->dao=new ObjectDB($db);
-		$this->ses=null;
-		$this->user=null;
 
 		$reqtabs=array(
 			"person"=>"",
@@ -55,24 +52,15 @@ class EspDB extends Application {
 	}
 
 	function process(){
-		$this->authenticate();
 		$uri = $this->getval("uri");
 		if (preg_match("/^\\/(\\w+)\\/([^\\/]+)$/", $uri, $match)) {
 			$this->setval("req.lang", $match[1]);
 			$this->setval("req.phrase", urldecode($match[2]));
-			//$this->setval("action","translate");
 		}
 		parent::process();
 	}
 
 	function defaultAction(){
-	}
-
-	function translateAction(){
-	}
-
-	function authenticate(){
-		return true;
 	}
 }
 
