@@ -14,10 +14,11 @@
 	<div class="searchbar border-in">
 	<form><!-- put inside form tag for auto-submit with Enter key -->
 	<span class="label">Enter phrase in</span>
+	<!-- https://stackoverflow.com/questions/2965971/how-to-add-a-images-in-select-list -->
 	<select id="lang" name="lang">
-		<option value="es" <%if(val("req.lang")=="es") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/es-lgflag.gif">español</option>
-		<option value="pl" <%if(val("req.lang")=="pl") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/pl-lgflag.gif">polski</option>
-		<option value="en" <%if(val("req.lang")=="en") echo "selected"%>><img src="<%val("cfg.rooturl")%>icony/flags-lg/en-lgflag.gif">english</option>
+		<option value="es" <%if(val("req.lang")=="es") echo "selected"%>>español</option>
+		<option value="pl" <%if(val("req.lang")=="pl") echo "selected"%>>polski</option>
+		<option value="en" <%if(val("req.lang")=="en") echo "selected"%>>english</option>
 	</select>
 	<br>
 	<span class="es"><input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>"></span>

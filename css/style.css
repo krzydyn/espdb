@@ -22,12 +22,12 @@ button,input,textarea,select {
 	margin:1px;
 	background-color:#DDD;
 }
-button,input[type="button"],input[type="submit"],input[type="reset"] {
+select,button,input[type="button"],input[type="submit"],input[type="reset"] {
 	cursor:pointer;
-	background-color:#AAA;
+	/*background-color:#AAA;*/
+	background-color: #7C7;
 	font-size:12pt;
 }
-select {font-size:12pt;}
 
 table {margin:0;padding:0;border:none;empty-cells:show;}
 td {vertical-align: top;}
@@ -76,4 +76,6 @@ fieldset>table>tbody>tr>td{
 .searchbar {padding:5px;}
 .source {font-size:8pt;}
 .meanings {padding-left:30px;font-size:10pt;}
-
+select#lang option[value="es"] { background-image:url(../icony/flags-lg/sp-lgflag.gif);   }
+select#lang option[value="pl"] { background-image:url(../icony/flags-lg/pl-lgflag.gif); }
+select#lang option[value="en"] { background-image:url(../icony/flags-lg/uk-lgflag.gif); }

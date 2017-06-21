@@ -53,7 +53,7 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		if (!property_exists($item,"phrase")) continue;
 		$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
 	}
-	echo json_encode(array("source"=>"glosbe.com","from"=>$short_src,"dest"=>$short_dst,"phrase"=>$a));
+	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"phrase"=>$a));
 
 	//5. save to sqldb
 }
