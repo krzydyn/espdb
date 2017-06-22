@@ -40,19 +40,23 @@ var onTranslateReady = function(rc,tx) {
 	var txt='';
 	var dbsrc='';
 	try{
-		var t = JSON.parse(tx);
-		console.log(t);
-		dbsrc = 'source: '+t.source;
-		var dst = t.dest;
-		var phrase = t.phrase;
-		if (phrase.length==0) txt+='Phrase not found';
+		var r = JSON.parse(tx);
+		console.log(r);
+		dbsrc = 'source: '+r.source;
+		var dst = r.dest;
+		var tr = r.tr;
+		if (tr.length==0) txt+='Phrase not found';
 		else {
-			var cnt=1;
 			txt+='<table>';
-			for (var i=0; i < phrase.length; ++i) {
-				if (phrase[i].lang==dst) {
-					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+phrase[i].text+'</td></tr>';
-					++cnt;
+			for (var j=0; j < tr.length; ++j) {
+				var cnt=1;
+				if (tr.length > 1) txt+='<tr><th colspan="2">'+tr[j].phrase+'</th></tr>';
+				var data = tr[j].data;
+				for (var i=0; i < data.length; ++i) {
+					if (data[i].lang==dst) {
+						txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+data[i].text+'</td></tr>';
+						++cnt;
+					}
 				}
 			}
 			txt+='</table>';

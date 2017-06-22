@@ -13,21 +13,27 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	$short_src=langCodeShort($lang_src);
 	$short_dst=langCodeShort($lang_dst);
 
+	if (empty(strtr($phrase,array("%"=>"")))) {
+		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>array()));
+		return ;
+	}
+
 	//1. check phrase in sqldb
 	$db = DB::connectDefault();
 	if ($lang_src == "spa") {
-		$q = "select '".$short_dst."' as lang,dst.word as text from rel_es_".$short_dst." r"
+		$q = "select src.word as phrase,'".$short_dst."' as lang,dst.word as text from rel_es_".$short_dst." r"
 			." join word_es src on r.id_es=src.id"
 			." join word_".$short_dst." dst on r.id_".$short_dst."=dst.id"
-			." where src.word=?";
+			." where src.word like ? order by src.word";
 	}
 	else {
-		$q = "select '".$short_dst."' as lang,dst.word as text from rel_es_".$short_src." r"
+		$q = "select src.word as phrase,'".$short_dst."' as lang,dst.word as text from rel_es_".$short_src." r"
 			." join word_es dst on r.id_es=dst.id"
 			." join word_".$short_src." src on r.id_".$short_src."=src.id"
-			." where src.word=?";
+			." where src.word like ? order by src.word";
 	}
-	$r=$db->query($q,array("1"=>$phrase));
+	//what is escape char for '%'?
+	$r=$db->query($q,array("1"=>$phrase."%"));
 
 	//2. if exists echo json_encode and return
 	if ($r===false) {
@@ -35,11 +41,27 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		logstr($db->errmsg());
 		return ;
 	}
+	$tr = array();
 	$a = array();
-	while ($row=$r->fetch()) $a[]=$row;
-	logstr($db->qstr()); logstr("items: ".sizeof($a));
+	$p = "";
+	$n=0;
+	while ($row=$r->fetch()) {
+		if (empty($p)) $p=$row["phrase"];
+		if ($p != $row["phrase"]) {
+			$tr[] = array("phrase"=>$p, "data"=>$a);
+			$p=$row["phrase"];
+			$a=array();
+		}
+		unset($row["phrase"]);
+		$a[]=$row;
+		++$n;
+	}
 	if (sizeof($a) > 0) {
-		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"phrase"=>$a));
+		$tr[] = array("phrase"=>$p, "data"=>$a);
+	}
+	logstr($db->qstr()); logstr("items: ".$n);
+	if ($n > 0) {
+		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 		return ;
 	}
 
@@ -48,12 +70,14 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 
 	//4. reformat
 	$o = json_decode($r);
-	$a=array();
+	$tr=array();
+	$a = array();
 	foreach ($o->tuc as $item) {
 		if (!property_exists($item,"phrase")) continue;
 		$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
 	}
-	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"phrase"=>$a));
+	$tr[] = array("phrase"=>$phrase, "data"=>$a);
+	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 
 	//5. save to sqldb
 }
