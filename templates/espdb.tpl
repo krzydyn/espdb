@@ -6,7 +6,7 @@
   <title>KrzychoTeka</title>
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
   <script src="<%val("cfg.rooturl")%>ajax.js"></script>
-  <script src="<%val("cfg.rooturl")%>/js/storage.js"></script>
+  <script src="<%val("cfg.rooturl")%>js/storage.js"></script>
 </head>
 <body onload="loadFromArgs()">
 <h1>KrzychoTeka</h1>
@@ -43,7 +43,7 @@ window.onpopstate = function(ev) {
 }
 
 var onTranslateReady = function(rc,tx) {
-	if (rc != 200) {
+	if (rc != 200 && rc != 304) {
 		console.log('ready rc='+rc);
 		return ;
 	}
@@ -51,6 +51,7 @@ var onTranslateReady = function(rc,tx) {
 	var dbsrc='';
 	try{
 		var r = JSON.parse(tx);
+		if (rc==304) r.source='esp-storage';
 		console.log(r);
 		dbsrc = 'source: '+r.source;
 		var tr = r.tr;
@@ -78,7 +79,7 @@ var onTranslateReady = function(rc,tx) {
 			}
 			txt+='</table>';
 		}
-		saveLocal(r.from+'/'+$('phrase').value,tx);
+		if (rc==200) saveLocal(r.from+'/'+$('phrase').value,tx);
 	}catch(e) {
 		console.log(e.stack);
 		if (e instanceof SyntaxError) console.log('JSON='+tx);
@@ -108,9 +109,9 @@ function translateWord() {
 	var u = null;
 	var tx = readLocal(lang+'/'+phrase);
 	if (tx) {
-		console.log("read it from localstore");
+		console.log("got it from localstore");
 		document.title = 'KrzychoTeka - '+phrase;
-		onTranslateReady(200,tx);
+		onTranslateReady(304,tx);
 		var w = encodeURIComponent(phrase); //escape %,&,=
 		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
 	}
@@ -124,7 +125,7 @@ function translateWord() {
 	}
 	else {
 		document.title = 'KrzychoTeka';
-		onTranslateReady(200,'{"source":"esp-offline", "tr":[]}');
+		onTranslateReady(304,'{"source":"", "tr":[]}');
 		u='<%val("cfg.rooturl")%>';
 	}
 	//title arg is ignored

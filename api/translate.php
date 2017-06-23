@@ -13,7 +13,8 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	$short_src=langCodeShort($lang_src);
 	$short_dst=langCodeShort($lang_dst);
 
-	if (empty(strtr($phrase,array("%"=>"")))) {
+	$p=strtr($phrase,array("%"=>""));
+	if (empty($p)) {
 		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>array()));
 		return ;
 	}
