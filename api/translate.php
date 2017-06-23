@@ -70,13 +70,15 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 
 	//4. reformat
 	$o = json_decode($r);
+	logstr("GLOSBE:".print_r($o,true));
 	$tr=array();
 	$a = array();
 	foreach ($o->tuc as $item) {
 		if (!property_exists($item,"phrase")) continue;
 		$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
 	}
-	$tr[] = array("phrase"=>$phrase, "data"=>$a);
+	if (sizeof($a) > 0)
+		$tr[] = array("phrase"=>$phrase, "data"=>$a);
 	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 
 	//5. save to sqldb

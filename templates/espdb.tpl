@@ -6,6 +6,7 @@
   <title>KrzychoTeka</title>
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
   <script src="<%val("cfg.rooturl")%>ajax.js"></script>
+  <script src="<%val("cfg.rooturl")%>/js/storage.js"></script>
 </head>
 <body onload="loadFromArgs()">
 <h1>KrzychoTeka</h1>
@@ -26,6 +27,7 @@
 	</form>
 	</div>
 	<div id="source" class="source right"></div>
+	<div id="loading" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>../icony/loading.gif"></div>
 	<div id="result" class="result"></div>
 </div>
 </div>
@@ -51,10 +53,12 @@ var onTranslateReady = function(rc,tx) {
 		var r = JSON.parse(tx);
 		console.log(r);
 		dbsrc = 'source: '+r.source;
-		var dst = r.dest;
 		var tr = r.tr;
-		if (tr.length==0) txt+='Phrase not found';
+		if (tr.length==0) {
+			if (r.dest) txt+='Phrase not found';
+		}
 		else {
+			var dst = r.dest;
 			var prw = tr.length > 1 || tr[0].phrase!=$('phrase').value;
 			txt+='<table>';
 			for (var j=0; j < tr.length; ++j) {
@@ -74,12 +78,14 @@ var onTranslateReady = function(rc,tx) {
 			}
 			txt+='</table>';
 		}
+		saveLocal(r.from+'/'+$('phrase').value,tx);
 	}catch(e) {
-		if (e instanceof SyntaxError) console.log(tx);
 		console.log(e.stack);
+		if (e instanceof SyntaxError) console.log('JSON='+tx);
 	}
 	$('source').innerHTML = dbsrc;
 	$('result').innerHTML = txt;
+	$('loading').style.display='none';
 }
 
 var ajax = new Ajax();
@@ -98,9 +104,18 @@ function translateWord() {
 		phrase = arguments[1];
 		$('phrase').value = phrase;
 	}
-	var state={lang:lang, phrase:phrase};
-	var u=null;
-	if (phrase) {
+	var state = {lang:lang, phrase:phrase};
+	var u = null;
+	var tx = readLocal(lang+'/'+phrase);
+	if (tx) {
+		console.log("read it from localstore");
+		document.title = 'KrzychoTeka - '+phrase;
+		onTranslateReady(200,tx);
+		var w = encodeURIComponent(phrase); //escape %,&,=
+		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
+	}
+	else if (phrase) {
+		$('loading').style.display='block';
 		document.title = 'KrzychoTeka - '+phrase;
 		var w = encodeURIComponent(phrase); //escape %,&,=
 		u='lang='+lang+'&phrase='+w;
@@ -109,6 +124,8 @@ function translateWord() {
 	}
 	else {
 		document.title = 'KrzychoTeka';
+		onTranslateReady(200,'{"source":"esp-offline", "tr":[]}');
+		u='<%val("cfg.rooturl")%>';
 	}
 	//title arg is ignored
 	if (arguments.length>0) history.pushState(state, '', u);

@@ -51,13 +51,14 @@ fieldset>table>tbody>tr>td{
 
 .title {font-weight:bold;}
 .content {text-align:center;}
-.none {display:none;}
+.nodisp {display:none;}
 .pack {display:inline-block;}
 .border-in{border:2px solid lightgrey;border-radius:3px;}
 .left {text-align:left;}
 .center {text-align:center;}
 .right {text-align:right;}
 .nowrap {white-space:nowrap;}
+.abs {position:absolute;}
 
 .abs-right {position:absolute;right:100px;}
 .abs-right>div{

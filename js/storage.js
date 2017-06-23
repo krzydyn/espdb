@@ -21,9 +21,16 @@ function storageAvailable(type) {
     }
 }
 
-function saveOfflineExample() {
+function saveLocal(key,val) {
+/*
 	localStorage.colorSetting = '#a4509b'; //method 1
 	localStorage['colorSetting'] = '#a4509b'; //method 2
 	localStorage.setItem('colorSetting', '#a4509b');//method 3
+*/
+	console.log('saving '+key+' as '+val.substring(0,100));
+	localStorage.setItem(key,val);
 }
 
+function readLocal(key) {
+	return localStorage.getItem(key);
+}
