@@ -29,8 +29,10 @@ $config["fckconfig"]="FCKconfig.js"; //relative to rooturl
 
 // db setup
 $config["debug"]["query"]="y";
-$config["dbtype"]="sqlite3";
-$config["dbname"]="db/espdb.db";
+//$config["dbtype"]="sqlite3";
+//$config["dbname"]="db/espdb.db";
+$config["dbtype"]="pdo";
+$config["dbname"]="sqlite:db/espdb.db";
 
 $config["sitetitle"]="Espanol DB";
 $config["lang"]="pl";

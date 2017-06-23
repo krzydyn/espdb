@@ -32,6 +32,14 @@
 <br>
 
 <script type="text/javascript">
+window.onpopstate = function(ev) {
+	console.log(ev);
+	var state = ev.state;
+	$('lang').value = state.lang;
+	$('phrase').value = state.phrase;
+	translateWord();
+}
+
 var onTranslateReady = function(rc,tx) {
 	if (rc != 200) {
 		console.log('ready rc='+rc);
@@ -47,14 +55,19 @@ var onTranslateReady = function(rc,tx) {
 		var tr = r.tr;
 		if (tr.length==0) txt+='Phrase not found';
 		else {
+			var prw = tr.length > 1 || tr[0].phrase!=$('phrase').value;
 			txt+='<table>';
 			for (var j=0; j < tr.length; ++j) {
 				var cnt=1;
-				if (tr.length > 1) txt+='<tr><th colspan="2">'+tr[j].phrase+'</th></tr>';
+				if (prw) {
+					var href = 'javascript:translateWord(\''+r.from+'\',\''+tr[j].phrase+'\')';
+					txt+='<tr><th colspan="2"><a href="'+href+'">'+tr[j].phrase+'</a></th></tr>';
+				}
 				var data = tr[j].data;
 				for (var i=0; i < data.length; ++i) {
 					if (data[i].lang==dst) {
-						txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>'+data[i].text+'</td></tr>';
+						var href = 'javascript:translateWord(\''+data[i].lang+'\',\''+data[i].text+'\')';
+						txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td><a href="'+href+'">'+data[i].text+'</a></td></tr>';
 						++cnt;
 					}
 				}
@@ -76,17 +89,30 @@ function loadFromArgs() {
 
 function translateWord() {
 	var lang=$('lang').value.trim().toLowerCase();
-	var w=$('phrase').value.trim().toLowerCase();
-	if (w) {
-		document.title = 'KrzychoTeka - '+w;
-		var u='phrase='+w+'&lang='+lang;
+	var phrase=$('phrase').value.trim().toLowerCase();
+	if (arguments.length>0) {
+		lang = arguments[0];
+		$('lang').value = lang;
+	}
+	if (arguments.length>1) {
+		phrase = arguments[1];
+		$('phrase').value = phrase;
+	}
+	var state={lang:lang, phrase:phrase};
+	var u=null;
+	if (phrase) {
+		document.title = 'KrzychoTeka - '+phrase;
+		var w = encodeURIComponent(phrase); //escape %,&,=
+		u='lang='+lang+'&phrase='+w;
 		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+u,onTranslateReady);
+		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
 	}
 	else {
 		document.title = 'KrzychoTeka';
 	}
-	//history.pushState('', document.title, );
-	history.replaceState('', document.title, '<%val("cfg.rooturl")%>'+lang+'/'+w);
+	//title arg is ignored
+	if (arguments.length>0) history.pushState(state, '', u);
+	else history.replaceState(state, '', u);
 }
 
 function addWords() {
