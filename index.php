@@ -9,7 +9,7 @@ exit;*/
 
 $r = new Router();
 //static content
-$r->addRoute("GET","/.*(css|js)",function() {
+$r->addRoute("GET","/.*(css|js|html)",function() {
 	$req=Request::getInstance();
 	$f=".".$req->getval("uri");
 	if (file_exists($f)) {
@@ -24,8 +24,13 @@ $r->addRoute("GET","/.*(css|js)",function() {
 $r->addRoute("GET","(/icony/.*)",function() {
 	$args = func_get_args();
 	$f="..".$args[1];
-	header("Content-Type: ".make_content_type($f));
-	readfile($f);
+	if (file_exists($f)) {
+		header("Content-Type: ".make_content_type($f));
+		readfile($f);
+	}
+	else {
+		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+	}
 });
 $r->addRoute("GET","/ajax\\.js",function() {
 	$f="../ajax.js";
@@ -39,7 +44,12 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	$req=Request::getInstance();
 	$args = func_get_args();
 	$func = strtolower($args[1]);
-	require_once("./api/".$func.".php");
+	$f = "./api/".$func.".php";
+	if (!file_exists($f)) {
+		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+		return ;
+	}
+	require_once($f);
 	$func = "api_".$func;
 	if ($func=="api_translate") {
 		$lang=$req->getval("req.lang");
@@ -48,6 +58,13 @@ $r->addRoute("","/api/(\\w+).*",function() {
 		else if ($lang=="en") {$lang="eng";$dst="spa";}
 		else {$lang="spa";}
 		$func($lang,$dst,$req->getval("req.phrase"));
+	}
+	else if ($func=="api_autocomplete") {
+		$lang=$req->getval("req.lang");
+		if ($lang=="pl") $lang="pol";
+		else if ($lang=="en") $lang="eng";
+		else $lang="spa";
+		$func($lang,$req->getval("req.phrase"));
 	}
 });
 

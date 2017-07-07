@@ -51,10 +51,10 @@ inputForm.onsubmit = function(event) {
   var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
   for(i = 0; i < voices.length ; i++) {
     if(voices[i].name === selectedOption) {
-		//utterThis.voice = voices[i];
-		utterThis.voiceURL = voices[i].voiceURL;
+		console.log(voices[i]);
 		utterThis.lang = voices[i].lang;
-		console.log(i+':'+utterThis.voiceURL);
+		utterThis.voiceURL = voices[i].voiceURI;
+		console.log(voices[i].name+':'+utterThis.lang+':'+utterThis.voiceURL);
     }
   }
   synth.speak(utterThis);
@@ -63,6 +63,3 @@ inputForm.onsubmit = function(event) {
 </script>
 
 </body></html>
-
-
-
