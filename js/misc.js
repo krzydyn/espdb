@@ -1,3 +1,8 @@
+//comaptibility workarrounds
+if (!Date.now) {
+	Date.now = function() { return new Date().getTime(); }
+}
+
 function log(str) {
 	var l = $('logarea');
 	if (l) {

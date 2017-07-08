@@ -21,16 +21,36 @@ function storageAvailable(type) {
     }
 }
 
+var storegeExpireDuration=24*60*60; //in seconds
 function saveLocal(key,val) {
-/*
-	localStorage.colorSetting = '#a4509b'; //method 1
-	localStorage['colorSetting'] = '#a4509b'; //method 2
-	localStorage.setItem('colorSetting', '#a4509b');//method 3
-*/
-	console.log('saving '+key+' as '+val.substring(0,100));
-	localStorage.setItem(key,val);
+	var expireon = Math.floor(Date.now()/1000)+storegeExpireDuration;
+	var obj = val;
+	if (obj instanceof String) obj={'expireOn':expireon, 'v':val};
+	else {
+		obj['expireOn']=expireon;
+	}
+	//console.log('savekey '+key);
+	//console.log(obj);
+	window.localStorage.setItem(key,JSON.stringify(obj));
+}
+
+function removeLocal(key) {
+	window.localStorage.removeItem(key);
 }
 
 function readLocal(key) {
-	return localStorage.getItem(key);
+	var tx = window.localStorage.getItem(key);
+	if (!tx) {
+		//console.log('no key '+key);
+		return null;
+	}
+	var expireon = Math.floor(Date.now/1000);
+	var obj = JSON.parse(tx);
+	//console.log('readkey '+key);
+	//console.log(obj);
+	if (!obj['expireOn'] || obj['expireOn'] < expireon) {
+		window.localStorage.removeItem(key);
+		obj=null;
+	}
+	return obj;
 }

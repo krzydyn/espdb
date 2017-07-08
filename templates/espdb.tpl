@@ -42,6 +42,7 @@
 <br>
 
 <script type="text/javascript">
+//history changing event handler
 window.onpopstate = function(ev) {
 	console.log(ev);
 	var state = ev.state;
@@ -75,65 +76,72 @@ ph.oninput = function() {
 	updateAutocomplete();
 }
 
-var onTranslateReady = function(rc,tx) {
-	if (rc != 200 && rc != 0) {
-		console.log('ready rc='+rc);
-		return ;
-	}
+function translateResponse(obj) {
+	var dbsrc = '';
+	if (obj.source) dbsrc='source: '+obj.source;
+
+	var tr = obj.tr;
 	var txt='';
-	var dbsrc='';
-	try{
-		var r = JSON.parse(tx);
-		//console.log(r);
-		if (rc == 0) r.source='esp-storage';
-		dbsrc = 'source: '+r.source;
-		var tr = r.tr;
-		if (tr.length==0) {
-			if (r.dest) txt+='Phrase not found';
-		}
-		else {
-			var dst = r.dest;
-			var prw = tr.length > 1 || tr[0].phrase!=$('phrase').value;
-			txt+='<table>';
-			for (var j=0; j < tr.length; ++j) {
-				var cnt=1;
-				if (prw) {
-					var href = 'javascript:translateWord(\''+r.from+'\',\''+tr[j].phrase+'\')';
-					txt+='<tr><th colspan="2"><a href="'+href+'">'+tr[j].phrase+'</a></th></tr>';
-				}
-				var data = tr[j].data;
-				var canspeak = findSpeech(dst);
-				for (var i=0; i < data.length; ++i) {
-					if (data[i].lang==dst) {
-						var href = 'javascript:translateWord(\''+data[i].lang+'\',\''+data[i].text+'\')';
-						txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>';
-						txt+='<a href="'+href+'">'+data[i].text+'</a>'
-						if (canspeak) {
-							href = 'javascript:sayit(\''+data[i].lang+'\',\''+data[i].text+'\')';
-							txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="../icony/speaker6.png" align="top"></a>'
-						}
-						txt+='</td></tr>';
-						++cnt;
+	if (tr.length==0) {
+		txt+='Phrase not found';
+	}
+	else {
+		var dst = obj.dest;
+		var prw = tr.length > 1 || tr[0].phrase!=$('phrase').value;
+		txt+='<table>';
+		for (var j=0; j < tr.length; ++j) {
+			var cnt=1;
+			if (prw) {
+				var href = 'javascript:translateWord(\''+obj.from+'\',\''+tr[j].phrase+'\')';
+				txt+='<tr><th colspan="2"><a href="'+href+'">'+tr[j].phrase+'</a></th></tr>';
+			}
+			var data = tr[j].data;
+			var canspeak = findSpeech(dst);
+			for (var i=0; i < data.length; ++i) {
+				if (data[i].lang==dst) {
+					var href = 'javascript:translateWord(\''+data[i].lang+'\',\''+data[i].text+'\')';
+					txt+='<tr><td class="right">'+cnt+'.&nbsp;</td><td>';
+					txt+='<a href="'+href+'">'+data[i].text+'</a>'
+					if (canspeak) {
+						href = 'javascript:sayit(\''+data[i].lang+'\',\''+data[i].text+'\')';
+						txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="../icony/speaker6.png" align="top"></a>'
 					}
+					txt+='</td></tr>';
+					++cnt;
 				}
 			}
-			txt+='</table>';
 		}
-		if (rc==200) {
-			r.source='esp-storage';
-			saveLocal(r.from+'/'+$('phrase').value,JSON.stringify(r));
-		}
-	}catch(e) {
-		console.log(e.stack);
-		if (e instanceof SyntaxError) console.log('JSON='+tx);
+		txt+='</table>';
 	}
 	$('source').innerHTML = dbsrc;
 	$('result').innerHTML = txt;
+}
+var onTranslateReady = function(rc,tx) {
 	$('loading').style.display='none';
+	if (rc != 200) {
+		console.log('Transalte rc='+rc);
+		$('source').innerHTML = tx+' '+rc;;
+		$('result').innerHTML = '';
+		return ;
+	}
+	try{
+		var obj = JSON.parse(tx);
+		//console.log(obj);
+		translateResponse(obj);
+		obj.source='esp-storage';
+		saveLocal(obj.from+'/'+$('phrase').value,obj);
+	}catch(e) {
+		console.log(e.stack);
+		if (e instanceof SyntaxError) console.log('JSON='+tx);
+		txt = e.toString();
+		$('source').innerHTML = 'error';
+		$('result').innerHTML = txt;
+	}
 }
 function setPhrase(s) {
 	$('phrase').value=s;
 	$('.autocomplete')[0].style.display='none';
+	translateWord();
 }
 var onAutoCompleteReady = function(rc,tx) {
 	$('loading_small').style.display='none';
@@ -191,10 +199,11 @@ function translateWord() {
 	}
 	var state = {lang:lang, phrase:phrase};
 	var u = null;
-	var tx = readLocal(lang+'/'+phrase);
-	if (tx) {
+	var obj = readLocal(lang+'/'+phrase);
+	if (obj) {
 		document.title = 'KrzychoTeka - '+phrase;
-		onTranslateReady(0,tx);
+		obj.source = 'esp-storage';
+		translateResponse(obj);
 		var w = encodeURIComponent(phrase); //escape %,&,=
 		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
 	}
@@ -208,26 +217,12 @@ function translateWord() {
 	}
 	else {
 		document.title = 'KrzychoTeka';
-		onTranslateReady(0,'{"source":"", "tr":[]}');
+		translateResponse(JSON.parse('{"tr":[]}'));
 		u='<%val("cfg.rooturl")%>';
 	}
 	//title arg is ignored
 	if (arguments.length>0) history.pushState(state, '', u);
 	else history.replaceState(state, '', u);
-}
-
-function addWords() {
-	var w='';
-	var n=0;
-	for (var i=0; i < arguments.length; ++i) {
-		var v = $(arguments[i]).value;
-		if (!v) continue;
-		if (n>0) w+='&';
-		w+=arguments[i]+'='+v.trim().toLowerCase();
-		++n;
-	}
-	console.log('put '+w);
-	ajax.async('put','<%val("cfg.rooturl")%>api/addwords?'+w,onAddWordReady);
 }
 </script>
 </body></html>

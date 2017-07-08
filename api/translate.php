@@ -67,12 +67,13 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	}
 
 	//3. get translation from external
-	$r=apicall("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	$r=restApi("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	logstr("GLOSBE(raw):".print_r($r,true));
 
 	//4. reformat
 	$o = json_decode($r);
-	logstr("GLOSBE:".print_r($o,true));
-	$tr=array();
+	//logstr("GLOSBE:".print_r($o,true));
+	$tr = array();
 	$a = array();
 	foreach ($o->tuc as $item) {
 		if (!property_exists($item,"phrase")) continue;
