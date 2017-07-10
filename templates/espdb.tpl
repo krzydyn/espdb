@@ -14,7 +14,7 @@
 <h1>KrzychoTeka</h1>
 <div class="content">
 <div class="pack left">
-	<div class="searchbar border-in">
+	<div class="searchbox border-in">
 	<form><!-- put inside form tag for auto-submit with Enter key -->
 		<span class="label">Enter phrase in</span>
 		<!-- https://stackoverflow.com/questions/2965971/how-to-add-a-images-in-select-list -->
@@ -24,7 +24,7 @@
 			<option value="en" <%if(val("req.lang")=="en") echo "selected"%>>english</option>
 		</select>
 		<br>
-		<span class="es">
+		<span id="search-complete" tabindex="-1">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
 			<div id="loading_small" class="autocomplete-loading"><img src="<%val("cfg.rooturl")%>../icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
@@ -51,22 +51,9 @@ window.onpopstate = function(ev) {
 	translateWord();
 }
 
+//https://javascript.info/focus-blur
+$('search-complete').addEventListener("focusout",()=> $('.autocomplete')[0].style.display='none');
 var ph=$('phrase');
-/*ph.onblur = function() {
-	console.log('onblur');
-	var ac = $('.autocomplete');
-	if (ac.length==0) return ;
-	ac[0].style.display='none';
-}
-ph.onkeypress = function() {
-	console.log('onkeypress');
-}
-ph.onkeyup = function() {
-	console.log('onkeyup');
-}
-ph.onkeydown = function() {
-	console.log('onkeydown');
-}*/
 ph.onfocus = function() {
 	console.log('onfocus');
 	updateAutocomplete();
@@ -74,6 +61,18 @@ ph.onfocus = function() {
 ph.oninput = function() {
 	console.log('oninput');
 	updateAutocomplete();
+}
+ph.onkeydown = function(ev) {
+	console.log('onkeydown:'+ev.key);
+	switch(ev.key) {
+		case 'ArrowUp':
+			return false;
+		case 'ArrowDown':
+			return false;
+		case 'Escape':
+			$('.autocomplete')[0].style.display='none'
+			return false;
+	}
 }
 
 function translateResponse(obj) {
@@ -197,6 +196,7 @@ function translateWord() {
 		phrase = arguments[1];
 		$('phrase').value = phrase;
 	}
+	if (phrase.isEmpty()) return ;
 	var state = {lang:lang, phrase:phrase};
 	var u = null;
 	var obj = readLocal(lang+'/'+phrase);
