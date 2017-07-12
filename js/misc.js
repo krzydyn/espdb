@@ -3,7 +3,39 @@ if (!Date.now) {
 	Date.now = function() { return new Date().getTime(); }
 }
 
+//usefull extensions
+String.prototype.isEmpty = function() { return this.length === 0; }
+String.prototype.isBlank = function() { return /^\s*$/.test(this); }
+String.prototype.pad = function (width) {
+    var l = this.length;
+    if (l > width) return num;
+    return '0'.repeat(width-l)+this;
+}
+Number.prototype.pad = function(width){ return String(this).pad(width); }
+
+function isEmpty(str) { return !str; }
+function isBlank(str) { return !str || /^\s*$/.test(str); }
+
+var log0 = Date.now();
+function formatTime(i) {
+	i=i-log0;
+	var ms=i%1000; i=Math.floor(i/1000);
+	var s=i%60; i=Math.floor(i/60);
+	var m=i%60; i=Math.floor(i/60);
+	var h=i%24; i=Math.floor(i/24);
+	var d=i;
+	return d+'+'+h.pad(2)+':'+m.pad(2)+':'+s.pad(2)+'.'+ms.pad(3);
+}
 function log(str) {
+	console.log("%s %s",formatTime(Date.now()), str);
+}
+function loge(str) {
+	console.log("%c%s %s","color:red;",formatTime(Date.now()), str);
+}
+function logw(str) {
+	console.log("%c%s %s","color:blue;",formatTime(Date.now()), str);
+}
+function loga(str) {
 	var l = $('logarea');
 	if (l) {
 		l.innerHTML += str+'\n';
@@ -15,11 +47,6 @@ function clearlog(str='') {
 	if (l) l.innerHTML = str+'\n';
 }
 
-function isEmpty(str) { return !str; }
-function isBlank(str) { return !str || /^\s*$/.test(str); }
-
-String.prototype.isEmpty = function() { return this.length === 0; }
-String.prototype.isBlank = function() { return /^\s*$/.test(this); }
 //already supported
 //String.prototype.startsWith = function(s) { return this.substring(0,s.length)==s; }
 

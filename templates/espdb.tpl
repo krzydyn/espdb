@@ -24,7 +24,7 @@
 			<option value="en" <%if(val("req.lang")=="en") echo "selected"%>>english</option>
 		</select>
 		<br>
-		<span id="search-complete" tabindex="-1">
+		<span id="search-complete">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
 			<div id="loading_small" class="autocomplete-loading"><img src="<%val("cfg.rooturl")%>../icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
@@ -44,7 +44,6 @@
 <script type="text/javascript">
 //history changing event handler
 window.onpopstate = function(ev) {
-	console.log(ev);
 	var state = ev.state;
 	$('lang').value = state.lang;
 	$('phrase').value = state.phrase;
@@ -52,18 +51,17 @@ window.onpopstate = function(ev) {
 }
 
 //https://javascript.info/focus-blur
-$('search-complete').addEventListener("focusout",()=> $('.autocomplete')[0].style.display='none');
+//delay focusout to allow click event on autocomplete brefore display=none
+$('search-complete').addEventListener("focusout",()=>setTimeout(function() {
+	log('focusout');
+	$('.autocomplete')[0].style.display='none';
+},500));
+
 var ph=$('phrase');
-ph.onfocus = function() {
-	console.log('onfocus');
-	updateAutocomplete();
-}
-ph.oninput = function() {
-	console.log('oninput');
-	updateAutocomplete();
-}
+ph.addEventListener("focus",()=>updateAutocomplete());
+ph.addEventListener("input",()=>updateAutocomplete());
 ph.onkeydown = function(ev) {
-	console.log('onkeydown:'+ev.key);
+	logw('onkeydown:'+ev.key);
 	switch(ev.key) {
 		case 'ArrowUp':
 			return false;
@@ -118,41 +116,44 @@ function translateResponse(obj) {
 var onTranslateReady = function(rc,tx) {
 	$('loading').style.display='none';
 	if (rc != 200) {
-		console.log('Transalte rc='+rc);
+		log('Transalte rc='+rc);
 		$('source').innerHTML = tx+' '+rc;;
 		$('result').innerHTML = '';
 		return ;
 	}
 	try{
 		var obj = JSON.parse(tx);
-		//console.log(obj);
+		//log(obj);
 		translateResponse(obj);
 		obj.source='esp-storage';
 		saveLocal(obj.from+'/'+$('phrase').value,obj);
 	}catch(e) {
-		console.log(e.stack);
-		if (e instanceof SyntaxError) console.log('JSON='+tx);
+		log(e.stack);
+		if (e instanceof SyntaxError) log('JSON='+tx);
 		txt = e.toString();
 		$('source').innerHTML = 'error';
 		$('result').innerHTML = txt;
 	}
 }
 function setPhrase(s) {
+	log('setPhrase '+s);
 	$('phrase').value=s;
 	$('.autocomplete')[0].style.display='none';
 	translateWord();
 }
 var onAutoCompleteReady = function(rc,tx) {
 	$('loading_small').style.display='none';
-	if ($('.autocomplete').length==0) return ;
+	if ($('.autocomplete').length==0) {
+		return ;
+	}
 	if (rc != 200) {
-		console.log('ready rc='+rc+':'+tx);
+		log('ready rc='+rc+':'+tx);
 		return ;
 	}
 	var txt = '<ul>';
 	try{
 		var r = JSON.parse(tx);
-		//console.log(r);
+		//log(r);
 		var ac = r.ac;
 		for (var j=0; j < ac.length; ++j) {
 			txt += '<li onclick="setPhrase(this.innerHTML);">'+ac[j].text+'</li>';
@@ -160,8 +161,8 @@ var onAutoCompleteReady = function(rc,tx) {
 		if (ac.length==0) txt='not found';
 		else txt += '</ul>';
 	}catch(e) {
-		console.log(e.stack);
-		if (e instanceof SyntaxError) console.log('JSON='+tx);
+		log(e.stack);
+		if (e instanceof SyntaxError) log('JSON='+tx);
 		txt='SyntaxError';
 	}
 	var ac = $('.autocomplete');
