@@ -27,7 +27,7 @@ function formatTime(i) {
 	return d+'+'+h.pad(2)+':'+m.pad(2)+':'+s.pad(2)+'.'+ms.pad(3);
 }
 function log(str) {
-	console.log("%s %s",formatTime(Date.now()), str);
+	console.log("%s",formatTime(Date.now()), str);
 }
 function loge(str) {
 	console.log("%c%s %s","color:red;",formatTime(Date.now()), str);
