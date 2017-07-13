@@ -26,7 +26,7 @@
 		<br>
 		<span id="search-complete">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
-			<div id="loading_small" class="autocomplete-loading"><img src="<%val("cfg.rooturl")%>../icony/loading_small.gif"></div>
+			<div id="loading_small" class="autocomplete-loading"><img src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
 		</span>
 		<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
@@ -34,7 +34,7 @@
 	</div>
 	<div id="source" class="source right"></div>
 	<a id="clearlog" href="javascript:clearlog();" style="display:none;">clear log</a>
-	<div id="loading" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>../icony/loading.gif"></div>
+	<div id="loading" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
 	<div id="result" class="result"></div>
 	<div id="logarea" class="log"></div>
 </div>
@@ -101,7 +101,7 @@ function translateResponse(obj) {
 					txt+='<a href="'+href+'">'+data[i].text+'</a>'
 					if (canspeak) {
 						href = 'javascript:sayit(\''+data[i].lang+'\',\''+data[i].text+'\')';
-						txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="../icony/speaker6.png" align="top"></a>'
+						txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="<%val("cfg.rooturl")%>icony/speaker6.png" align="top"></a>'
 					}
 					txt+='</td></tr>';
 					++cnt;
