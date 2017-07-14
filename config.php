@@ -34,7 +34,7 @@ $config["debug"]["query"]="y";
 $config["dbtype"]="pdo";
 $config["dbname"]="sqlite:db/espdb.db";
 
-$config["sitetitle"]="Espanol DB";
+$config["sitetitle"]="KrzychoTeka";
 $config["lang"]="pl";
 
 $config["uploaddir"]="";

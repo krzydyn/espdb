@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl" lang="pl">
 <head>
+  <title><%val("cfg.sitetitle")%></title>
   <meta http-equiv="Content-type" content="text/html;charset=<%val("charset")%>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KrzychoTeka</title>
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/espdb.css" type="text/css"/>
   <script src="<%val("cfg.rooturl")%>ajax.js"></script>
@@ -11,7 +11,7 @@
   <script src="<%val("cfg.rooturl")%>js/misc.js"></script>
 </head>
 <body onload="translateWord()">
-<h1>KrzychoTeka</h1>
+<h1><%val("cfg.sitetitle")%></h1>
 <div class="content">
 <div class="pack left">
 	<div class="searchbox border-in">
