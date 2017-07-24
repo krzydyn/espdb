@@ -1,7 +1,6 @@
 * {
 	font-size:inherit;
 	font-family:inherit;
-	text-align:inherit;
 }
 @media screen and (max-width:481px){}
 
@@ -16,14 +15,15 @@ h1{font-size:16pt;text-align:center;}
 h2{font-size:14pt;text-align:center;}
 h3{font-size:10pt;text-align:center;}
 h4{font-size:8pt;text-align:center;}
-img {margin:0;padding:0;border:0;}
+img {margin:0;padding:0;border:0;vertical-align:middle;}
+div {text-align:left};
 p {text-align:left; margin:2px;}
 a,a:visited,a:focus {text-decoration:none;color:#00C;}
 a:hover {text-decoration:none;color:#3FA;background-color:#777;}
 a:hover>img {background-color:#aaa;}
 button,input,textarea,select {
 	font-size:14pt;
-	border:1px solid black;
+	border:1px solid gray;
 	border-radius:5px;
 	padding:1px 4px;
 	margin:1px;
@@ -31,13 +31,12 @@ button,input,textarea,select {
 }
 select,button,input[type="button"],input[type="submit"],input[type="reset"] {
 	cursor:pointer;
-	/*background-color:#AAA;*/
 	background-color: #7C7;
 	font-size:12pt;
 }
 
 table {margin:0;padding:0;border:none;empty-cells:show;}
-td,th {vertical-align:text-top;margin:0;padding:0;border:0;}
+td,th {vertical-align:middle;text-align:center;margin:0;padding:0;border:0;}
 tr.sp>td {background-color:white;padding:2px;}
 
 fieldset{
@@ -56,26 +55,34 @@ fieldset>table>tbody>tr>td{
 	padding:2px 5px;
 }
 
+.b1{border:1px solid black;}
 .content {text-align:center;}
 .nodisp {display:none;}
 .pack {display:inline-block;}
-.border-in{border:2px solid lightgrey;border-radius:3px;}
-.border1{border:1px solid black;}
+.abs {position:absolute;}
+
 .left {text-align:left;}
 .center {text-align:center;}
 .right {text-align:right;}
-.nowrap {white-space:nowrap;}
-.abs {position:absolute;}
+.top {vertical-align:top;}
+.mid {vertical-align:middle;}
+.bot {vertical-align:bottom;}
 
-.autocomplete-loading {
+.nowrap {white-space:nowrap;}
+.bold {font-weight:bold;}
+input.disabled {background-color:#888;}
+
+.loading {
+	z-index:100;
 	position:absolute;
 	display:none;
 }
-.autocomplete-loading>img {
+.loading>img {
 	position:relative;
 	padding:5px;
-	left:-30px;
 }
+
+/* Autocomplete input */
 .autocomplete {
 	text-align:left;
 	position:absolute;
@@ -100,6 +107,49 @@ fieldset>table>tbody>tr>td{
 }
 .autocomplete>ul>li:hover {
 	background-color:rgba(200,200,200,1);
+}
+
+/* Dropdown list
+ * the structure have to be:
+ * <div class="ddlist">
+ *    <input type="button" onclick="">
+ *    <div>
+ *    <ul><li>...
+ *    </div>
+ * </div>
+ */
+.ddlist {
+	display:inline-block;
+}
+.ddlist>div {
+	position:absolute;
+	display:none;
+	margin-top:1px;
+	padding-top:1px;
+	padding-right:10px;
+	border:1px solid gray;
+	background-color:#999;
+	border-radius:5px;
+	overflow-x:hidden;
+	overflow-y:auto;
+	max-height:50%;
+}
+.ddlist>div ul {
+	padding:3px 5px;
+	margin:0;
+}
+.ddlist>div ul>li {
+	padding:1px 3px;
+	list-style:none;
+	cursor:pointer;
+	border-radius:5px;
+	white-space:nowrap;
+}
+.ddlist>div ul>li:hover {
+	background-color:#CCC;
+}
+ul.horiz>li {
+	display:inline;
 }
 
 .abs-right {position:absolute;right:100px;}

@@ -1,8 +1,10 @@
 .searchbox {padding:5px;}
 .source {font-size:8pt;}
-.result {}
+.result td {text-align:left;}
 .meanings {padding-left:30px;font-size:10pt;}
 .log {font-family:mono;font-size:8pt; white-space: pre; }
+.border-in{border:2px solid lightgrey;border-radius:3px;}
+
 select#lang option[value="es"] { background-image:url(../icony/flags-lg/sp-lgflag.gif);   }
 select#lang option[value="pl"] { background-image:url(../icony/flags-lg/pl-lgflag.gif); }
 select#lang option[value="en"] { background-image:url(../icony/flags-lg/uk-lgflag.gif); }

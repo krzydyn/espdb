@@ -26,7 +26,7 @@
 		<br>
 		<span id="search-complete">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
-			<div id="loading_small" class="autocomplete-loading"><img src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
+			<div id="loading" class="loading"><img src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
 		</span>
 		<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
@@ -34,7 +34,7 @@
 	</div>
 	<div id="source" class="source right"></div>
 	<a id="clearlog" href="javascript:clearlog();" style="display:none;">clear log</a>
-	<div id="loading" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
+	<div id="searching" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
 	<div id="result" class="result"></div>
 	<div id="logarea" class="log"></div>
 </div>
@@ -114,7 +114,7 @@ function translateResponse(obj) {
 	$('result').innerHTML = txt;
 }
 var onTranslateReady = function(rc,tx) {
-	$('loading').style.display='none';
+	$('searching').style.display='none';
 	if (rc != 200) {
 		log('Transalte rc='+rc);
 		$('source').innerHTML = tx+' '+rc;;
@@ -142,7 +142,6 @@ function setPhrase(s) {
 	translateWord();
 }
 var onAutoCompleteReady = function(rc,tx) {
-	$('loading_small').style.display='none';
 	if ($('.autocomplete').length==0) {
 		return ;
 	}
@@ -180,7 +179,6 @@ function updateAutocomplete() {
 		$('.autocomplete')[0].style.display='none';
 		return ;
 	}
-	$('loading_small').style.display='inline-block';
 	var w = encodeURIComponent(phrase); //escape %,&,=,sp
 	var u='lang='+lang+'&phrase='+w;
 	ajax.async('get','<%val("cfg.rooturl")%>api/autocomplete?'+u,onAutoCompleteReady);
@@ -209,7 +207,7 @@ function translateWord() {
 		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
 	}
 	else if (phrase) {
-		$('loading').style.display='block';
+		$('searching').style.display='block';
 		document.title = 'KrzychoTeka - '+phrase;
 		var w = encodeURIComponent(phrase); //escape %,&,=
 		u='lang='+lang+'&phrase='+w;
