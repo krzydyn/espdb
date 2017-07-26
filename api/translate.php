@@ -25,13 +25,13 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		$q = "select src.word as phrase,'".$short_dst."' as lang,dst.word as text from rel_es_".$short_dst." r"
 			." join word_es src on r.id_es=src.id"
 			." join word_".$short_dst." dst on r.id_".$short_dst."=dst.id"
-			." where src.word like ? order by src.word";
+			." where src.word like ? order by src.word,r.prio";
 	}
 	else {
 		$q = "select src.word as phrase,'".$short_dst."' as lang,dst.word as text from rel_es_".$short_src." r"
 			." join word_es dst on r.id_es=dst.id"
 			." join word_".$short_src." src on r.id_".$short_src."=src.id"
-			." where src.word like ? order by src.word";
+			." where src.word like ? order by src.word,r.prio";
 	}
 	//what is escape char for '%'?
 	$r=$db->query($q,array("1"=>$phrase."%"));
@@ -60,6 +60,7 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	if (sizeof($a) > 0) {
 		$tr[] = array("phrase"=>$p, "data"=>$a);
 	}
+	$db->close();
 	logstr($db->qstr()); logstr("items: ".$n);
 	if ($n > 0) {
 		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
@@ -79,11 +80,67 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		if (!property_exists($item,"phrase")) continue;
 		$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
 	}
-	if (sizeof($a) > 0)
+	if (sizeof($a) > 0) {
 		$tr[] = array("phrase"=>$phrase, "data"=>$a);
+		//5. save to sqldb
+		addTranslation($short_src,$short_dst,$tr[0]);
+	}
 	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 
-	//5. save to sqldb
+}
+
+function getId($db,$w,$lang) {
+	$r = $db->query("SELECT id FROM word_".$lang." WHERE word=?",array("1"=>$w));
+	if ($row=$r->fetch()) {
+		return $row["id"];
+	}
+	return 0;
+}
+function addWords($db,$words,$lang) {
+	$ids=array();
+	logstr("addWords $lang ".implode(",",$words));
+	foreach ($words as $w) {
+		$w=trim($w);
+		$id=getId($db,$w,$lang);
+		if (!$id) {
+			$r=$db->query("INSERT INTO word_".$lang." (word) VALUES (?)",array("1"=>$w));
+			if ($r===false) logstr($db->errmsg());
+			$id=$db->insertid();
+		}
+		if ($id) $ids[]=$id;
+	}
+	logstr("ids=".implode(",",$ids));
+	return $ids;
+}
+function checkRel($db,$lang_src,$id_s,$lang_dst,$id_d) {
+	$r = $db->query("SELECT 1 FROM rel_".$lang_src."_".$lang_dst." WHERE id_".$lang_src."=? and id_".$lang_dst."=?",
+				array("1"=>$id_s,"2"=>$id_d));
+	return $r->fetch();
+}
+function createRel($db,$lang_src,$id_src,$lang_dst,$id_dst) {
+	foreach ($id_src as $id_s) {
+		$prio=1;
+		foreach ($id_dst as $id_d) {
+			if (checkRel($db,$lang_src,$id_s,$lang_dst,$id_d)) continue;
+			$q = "INSERT INTO rel_".$lang_src."_".$lang_dst." (id_".$lang_src.", id_".$lang_dst.", prio) VALUES (?, ?, ?)";
+			$db->query($q,array("1"=>$id_s,"2"=>$id_d, "3"=>$prio));
+			++$prio;
+		}
+	}
+}
+function addTranslation($short_src,$short_dst,$tr) {
+	logstr("addTranslation($short_src,$short_dst,...)");
+	$db = DB::connectDefault();
+	$a=array();
+	foreach ($tr["data"] as $item) {
+		if ($item["lang"]==$short_dst) $a[]=$item["text"];
+	}
+	$id_src=addWords($db,array($tr["phrase"]),$short_src);
+	$id_dst=addWords($db,$a,$short_dst);
+	if ($short_src == "es")
+		createRel($db,$short_src,$id_src,$short_dst,$id_dst);
+	else if ($short_dst == "es")
+		createRel($db,$short_dst,$id_dst,$short_src,$id_src);
 }
 
 //external translation services:
@@ -95,4 +152,5 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 //   https://translation.googleapis.com
 //4. https://tech.yandex.com/translate/
 //5. http://pl.pons.com/specials/api (need registration)
+
 ?>
