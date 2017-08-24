@@ -8,8 +8,6 @@ function langCodeShort($lang) {
 	}
 }
 function api_autocomplete($lang_src,$phrase) {
-	logstr("api_autocomplete(".$lang_src.",".$phrase.")");
-
 	$short_src=langCodeShort($lang_src);
 
 	$p=strtr($phrase,array("%"=>""));
@@ -24,19 +22,18 @@ function api_autocomplete($lang_src,$phrase) {
 	//what is escape char for '%'?
 	$r=$db->query($q,array("1"=>$phrase."%"));
 
-	//2. if exists echo json_encode and return
 	if ($r===false) {
-		logstr($db->qstr());
-		logstr($db->errmsg());
+		$this->addval("error","DB:".$db->errmsg());
 		return ;
 	}
+
+	//2. if exists echo json_encode and return
 	$tr = array();
 	$n=0;
 	while ($row=$r->fetch()) {
 		$tr[]=$row;
 		++$n;
 	}
-	logstr($db->qstr()); logstr("items: ".$n);
 	echo json_encode(array("source"=>"esp-db","lang"=>$short_src,"ac"=>$tr));
 }
 

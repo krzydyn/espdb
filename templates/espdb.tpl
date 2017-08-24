@@ -11,7 +11,7 @@
   <script src="<%val("cfg.rooturl")%>js/misc.js"></script>
 </head>
 <body onload="translateWord()">
-<h1><%val("cfg.sitetitle")%></h1>
+<h1><%val("cfg.title")%></h1>
 <div class="content">
 <div class="pack left">
 	<div class="searchbox border-in">
@@ -61,13 +61,14 @@ var ph=$('phrase');
 ph.addEventListener("focus",()=>updateAutocomplete());
 ph.addEventListener("input",()=>updateAutocomplete());
 ph.onkeydown = function(ev) {
-	logw('onkeydown:'+ev.key);
-	switch(ev.key) {
-		case 'ArrowUp':
+	ev = ev || window.event;
+	var key = ev.keyCode || ev.witch;
+	//log('key: '+key);
+	switch(key) {
+		case 38: // arrow-up
+		case 40: // arrow-dn
 			return false;
-		case 'ArrowDown':
-			return false;
-		case 'Escape':
+		case 27: // esc
 			$('.autocomplete')[0].style.display='none'
 			return false;
 	}
@@ -150,15 +151,19 @@ var onAutoCompleteReady = function(rc,tx) {
 		return ;
 	}
 	var txt = '<ul>';
+	var errtxt = '';
 	try{
 		var r = JSON.parse(tx);
-		//log(r);
-		var ac = r.ac;
-		for (var j=0; j < ac.length; ++j) {
-			txt += '<li onclick="setPhrase(this.innerHTML);">'+ac[j].text+'</li>';
+		//log('autocompl'+tx);
+		if (r.ac) {
+			var ac = r.ac;
+			for (var j=0; j < ac.length; ++j) {
+				txt += '<li onclick="setPhrase(this.innerHTML);">'+ac[j].text+'</li>';
+			}
+			if (ac.length==0) txt='not found';
+			else txt += '</ul>';
 		}
-		if (ac.length==0) txt='not found';
-		else txt += '</ul>';
+		if (r.error) err = r.error;
 	}catch(e) {
 		log(e.stack);
 		if (e instanceof SyntaxError) log('JSON='+tx);
@@ -168,6 +173,10 @@ var onAutoCompleteReady = function(rc,tx) {
 	ac[0].style.display='block';
 	ac[0].style.width=$('phrase').getBoundingClientRect().width+'px';
 	ac[0].innerHTML = txt;
+	if (errtxt) {
+		var err = $('.error');
+		if (err) err[0].innerHTML = error;
+	}
 }
 
 var ajax = new Ajax();

@@ -1,11 +1,7 @@
 <?php
 require_once("config.php");
 require_once($config["cmslib"]."router.php");
-require_once($config["cmslib"]."request.php");
-/*echo "<pre>";
-print_r(Request::getInstance()->getval(""));
-echo "</pre>";
-exit;*/
+require_once($config["cmslib"]."request.php"); //ob_start
 
 $r = new Router();
 //static content
@@ -38,7 +34,7 @@ $r->addRoute("GET","/ajax\\.js",function() {
 	readfile($f);
 });
 
-//valid php scripts
+//rest api -> json
 $r->addRoute("","/api/(\\w+).*",function() {
 	global $config;
 	$req=Request::getInstance();
@@ -46,10 +42,14 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	$func = strtolower($args[1]);
 	$f = "./api/".$func.".php";
 	if (!file_exists($f)) {
-		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+		//header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+		echo json_encode(array("error"=>"Method not exist"));
 		return ;
 	}
 	require_once($f);
+
+	$c = ob_get_contents();
+	ob_end_clean();
 	$func = "api_".$func;
 	if ($func=="api_translate") {
 		$lang=$req->getval("req.lang");
@@ -66,23 +66,25 @@ $r->addRoute("","/api/(\\w+).*",function() {
 		else $lang="spa";
 		$func($lang,$req->getval("req.phrase"));
 	}
+	else
+		echo json_encode(array("error"=>$c));
 });
 
 $r->addRoute("GET","/.*",function() {
-global $config;
-require_once("espdb.php");
-try{
-	$a = new EspDB();
-	$a->initialize();
-	$a->process();
-	unset($a);
-}
-catch(Exception $e)
-{
-	echo "Exception: ".$e->getMessage().";";
-}
-$t = new TemplateEngine();
-$t->load("espdb.tpl");
+	global $config;
+	require_once("espdb.php");
+	try{
+		$a = new EspDB();
+		$a->initialize();
+		$a->process();
+		unset($a);
+	}
+	catch(Exception $e)
+	{
+		echo "Exception: ".$e->getMessage().";";
+	}
+	$t = new TemplateEngine();
+	$t->load("espdb.tpl");
 });
 
 $r->addRoute("","",function() {

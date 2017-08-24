@@ -46,7 +46,7 @@ class EspDB extends Application {
 				if ($r===false) {$this->addval("error","DB create($t):".$db->errmsg());}
 			}
 			else {
-				echo "no file: ".$sql;
+				$this->addval("error","no file: ".$sql);
 			}
 		}
 	}
