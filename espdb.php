@@ -35,7 +35,7 @@ class EspDB extends Application {
 		}
 
 		while (list($t,$v)=each($reqtabs)) {
-			if (in_array($t,$tabs)) continue;
+			if (in_array($t,$tabs)) continue; // if tables exists do nothing
 			$sql = "sql/".$t.".sql";
 			if (file_exists($sql)) {
 				$r=$db->script(file_get_contents($sql));

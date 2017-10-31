@@ -1,4 +1,4 @@
-CREATE TABLE tense (id INTEGER PRIMARY KEY,name VARCHAR,descr TEXT,UNIQUE(name));
+CREATE TABLE IF NOT EXISTS tense (id INTEGER PRIMARY KEY,name VARCHAR,descr TEXT,UNIQUE(name));
 INSERT INTO tense (name,descr) VALUES
 	('Indicativo Presente','The presente is the present tense (simple present). We generally use this tense to speak about the present and the future.');
 INSERT INTO tense (name,descr) VALUES

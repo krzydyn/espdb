@@ -5,6 +5,17 @@ require_once($config["cmslib"]."request.php"); //ob_start
 
 $r = new Router();
 //static content
+$r->addRoute("GET","/favicon.ico",function() {//args[0] constain whole match
+	$req=Request::getInstance();
+	$f="../icony/flags-lg/sp-lgflag.gif";
+	if (file_exists($f)) {
+		header("Content-Type: ".make_content_type($f));
+		readfile($f);
+	}
+	else {
+		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
+	}
+});
 $r->addRoute("GET","/.*(css|js|html)",function() {
 	$req=Request::getInstance();
 	$f=".".$req->getval("uri");
@@ -16,10 +27,9 @@ $r->addRoute("GET","/.*(css|js|html)",function() {
 		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
 	}
 });
-
-$r->addRoute("GET","(/icony/.*)",function() {
-	$args = func_get_args();
-	$f="..".$args[1];
+$r->addRoute("GET","/icony/.*",function() {
+	$req=Request::getInstance();
+	$f="..".$req->getval("uri");
 	if (file_exists($f)) {
 		header("Content-Type: ".make_content_type($f));
 		readfile($f);
