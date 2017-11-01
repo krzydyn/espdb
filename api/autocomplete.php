@@ -8,11 +8,12 @@ function langCodeShort($lang) {
 	}
 }
 function api_autocomplete($lang_src,$phrase) {
+	$req=Request::getInstance();
 	$short_src=langCodeShort($lang_src);
 
 	$p=strtr($phrase,array("%"=>""));
 	if (empty($p)) {
-		echo json_encode(array());
+		$req->setval("result",array());
 		return ;
 	}
 
@@ -23,18 +24,16 @@ function api_autocomplete($lang_src,$phrase) {
 	$r=$db->query($q,array("1"=>$phrase."%"));
 
 	if ($r===false) {
-		$this->addval("error","DB:".$db->errmsg());
+		$req->addval("error","DB:".$db->errmsg());
 		return ;
 	}
 
-	//2. if exists echo json_encode and return
+	//2. if exists set result and return
 	$tr = array();
-	$n=0;
 	while ($row=$r->fetch()) {
 		$tr[]=$row;
-		++$n;
 	}
-	echo json_encode(array("source"=>"esp-db","lang"=>$short_src,"ac"=>$tr));
+	$req->setval("result",array("source"=>"esp-db","lang"=>$short_src,"ac"=>$tr));
 }
 
 //external translation services:

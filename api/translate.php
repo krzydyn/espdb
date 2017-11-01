@@ -8,14 +8,14 @@ function langCodeShort($lang) {
 	}
 }
 function api_translate($lang_src,$lang_dst,$phrase) {
-	logstr("api_translate(".$lang_src.",".$lang_dst.",".$phrase.")");
+	$req=Request::getInstance();
 
 	$short_src=langCodeShort($lang_src);
 	$short_dst=langCodeShort($lang_dst);
 
 	$p=strtr($phrase,array("%"=>""));
 	if (empty($p)) {
-		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>array()));
+		$req->setval("result",array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>array()));
 		return ;
 	}
 
@@ -36,12 +36,11 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	//what is escape char for '%'?
 	$r=$db->query($q,array("1"=>$phrase."%"));
 
-	//2. if exists echo json_encode and return
 	if ($r===false) {
-		logstr($db->qstr());
-		logstr($db->errmsg());
+		$req->addval("error","DB:".$db->errmsg());
 		return ;
 	}
+
 	$tr = array();
 	$a = array();
 	$p = "";
@@ -61,15 +60,15 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		$tr[] = array("phrase"=>$p, "data"=>$a);
 	}
 	$db->close();
-	logstr($db->qstr()); logstr("items: ".$n);
+
+	//2. if exists set result and return
 	if ($n > 0) {
-		echo json_encode(array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
+		$req->setval("result",array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 		return ;
 	}
 
 	//3. get translation from external
 	$r=restApi("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
-	logstr("GLOSBE(raw):".print_r($r,true));
 
 	//4. reformat
 	$o = json_decode($r);
@@ -85,8 +84,7 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		//5. save to sqldb
 		addTranslation($short_src,$short_dst,$tr[0]);
 	}
-	echo json_encode(array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
-
+	$req->setval("result",array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 }
 
 function getId($db,$w,$lang) {

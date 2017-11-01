@@ -58,8 +58,6 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	}
 	require_once($f);
 
-	$c = ob_get_contents();
-	ob_end_clean();
 	$func = "api_".$func;
 	if ($func=="api_translate") {
 		$lang=$req->getval("req.lang");
@@ -76,8 +74,13 @@ $r->addRoute("","/api/(\\w+).*",function() {
 		else $lang="spa";
 		$func($lang,$req->getval("req.phrase"));
 	}
-	else
-		echo json_encode(array("error"=>$c));
+	$c = ob_get_contents();
+	ob_end_clean();
+	if ($c) $req->addval("error",$c);
+	$r = $req->getval("result");
+	$c = $req->getval("error");
+	if ($c) $r["error"]=$c;
+	echo json_encode($r);
 });
 
 $r->addRoute("GET","/.*",function() {

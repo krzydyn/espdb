@@ -36,7 +36,7 @@
 	<a id="clearlog" href="javascript:clearlog();" style="display:none;">clear log</a>
 	<div id="searching" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
 	<div id="result" class="result"></div>
-	<div id="logarea" class="log"></div>
+	<div id="errors" class="log"></div>
 </div>
 </div>
 <br>
@@ -133,7 +133,7 @@ var onTranslateReady = function(rc,tx) {
 		if (e instanceof SyntaxError) log('JSON='+tx);
 		txt = e.toString();
 		$('source').innerHTML = 'error';
-		$('result').innerHTML = txt;
+		$('errors').innerHTML = txt;
 	}
 }
 function setPhrase(s) {
@@ -154,7 +154,7 @@ var onAutoCompleteReady = function(rc,tx) {
 	var errtxt = '';
 	try{
 		var r = JSON.parse(tx);
-		//log('autocompl'+tx);
+		log('autocompl'+tx);
 		if (r.ac) {
 			var ac = r.ac;
 			for (var j=0; j < ac.length; ++j) {
@@ -163,19 +163,20 @@ var onAutoCompleteReady = function(rc,tx) {
 			if (ac.length==0) txt='not found';
 			else txt += '</ul>';
 		}
-		if (r.error) err = r.error;
+		if (r.error) errtxt = r.error;
 	}catch(e) {
 		log(e.stack);
 		if (e instanceof SyntaxError) log('JSON='+tx);
-		txt='SyntaxError';
+		errtxt='SyntaxError';
 	}
 	var ac = $('.autocomplete');
 	ac[0].style.display='block';
 	ac[0].style.width=$('phrase').getBoundingClientRect().width+'px';
 	ac[0].innerHTML = txt;
-	if (errtxt) {
-		var err = $('.error');
-		if (err) err[0].innerHTML = error;
+	var err = $('errors');
+	if (err) {
+		if (errtxt) err.innerHTML = errtxt;
+		else err.innerHTML='';
 	}
 }
 
