@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
   <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/espdb.css" type="text/css"/>
-  <script src="<%val("cfg.rooturl")%>ajax.js"></script>
-  <script src="<%val("cfg.rooturl")%>js/storage.js"></script>
-  <script src="<%val("cfg.rooturl")%>js/misc.js"></script>
+  <script async src="<%val("cfg.rooturl")%>ajax.js"></script>
+  <script async src="<%val("cfg.rooturl")%>js/storage.js"></script>
+  <script async src="<%val("cfg.rooturl")%>js/misc.js"></script>
 </head>
-<body onload="translateWord()">
+<body onload="onBodyLoad()" >
 <h1><%val("cfg.title")%></h1>
 <div class="content">
 <div class="pack left">
@@ -42,6 +42,22 @@
 <br>
 
 <script type="text/javascript">
+var ajax = null;
+var body = document.getElementsByTagName('body')[0];
+body.addEventListener('load', onBodyLoad, false);
+
+function onBodyLoad() {
+	//https://javascript.info/focus-blur
+	//delay focusout to allow click event on autocomplete brefore display=none
+	$('search-complete').addEventListener('focusout',()=>setTimeout(function() {
+		log('focusout');
+		$('.autocomplete')[0].style.display='none';
+	},500));
+	ajax = new Ajax();
+	setupPhraseInput();
+	translateWord();
+}
+
 //history changing event handler
 window.onpopstate = function(ev) {
 	var state = ev.state;
@@ -50,27 +66,22 @@ window.onpopstate = function(ev) {
 	translateWord();
 }
 
-//https://javascript.info/focus-blur
-//delay focusout to allow click event on autocomplete brefore display=none
-$('search-complete').addEventListener("focusout",()=>setTimeout(function() {
-	log('focusout');
-	$('.autocomplete')[0].style.display='none';
-},500));
-
-var ph=$('phrase');
-ph.addEventListener("focus",()=>updateAutocomplete());
-ph.addEventListener("input",()=>updateAutocomplete());
-ph.onkeydown = function(ev) {
-	ev = ev || window.event;
-	var key = ev.keyCode || ev.witch;
-	//log('key: '+key);
-	switch(key) {
-		case 38: // arrow-up
-		case 40: // arrow-dn
-			return false;
-		case 27: // esc
-			$('.autocomplete')[0].style.display='none'
-			return false;
+function setupPhraseInput(ph) {
+	var ph=$('phrase');
+	ph.addEventListener('focus',()=>updateAutocomplete());
+	ph.addEventListener('input',()=>updateAutocomplete());
+	ph.onkeydown = function(ev) {
+		ev = ev || window.event;
+		var key = ev.keyCode || ev.witch;
+		//log('key: '+key);
+		switch(key) {
+			case 38: // arrow-up
+			case 40: // arrow-dn
+				return false;
+			case 27: // esc
+				$('.autocomplete')[0].style.display='none'
+				return false;
+		}
 	}
 }
 
@@ -180,7 +191,6 @@ var onAutoCompleteReady = function(rc,tx) {
 	}
 }
 
-var ajax = new Ajax();
 
 function updateAutocomplete() {
 	var lang=$('lang').value.trim().toLowerCase();
