@@ -1,5 +1,5 @@
 <?php
-require_once($config["cmslib"]."rest.php");
+require_once($config["lib"]."rest.php");
 function langCodeShort($lang) {
 	switch ($lang) {
 		case "spa": return "es";
@@ -66,13 +66,14 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 		$req->setval("result",array("source"=>"esp-db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 		return ;
 	}
+	logstr("not found in db, trying glosbe");
 
 	//3. get translation from external
 	$r=restApi("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
 
+	logstr("glosbe resp: ".print_r($r, true));
 	//4. reformat
 	$o = json_decode($r);
-	//logstr("GLOSBE:".print_r($o,true));
 	$tr = array();
 	$a = array();
 	foreach ($o->tuc as $item) {

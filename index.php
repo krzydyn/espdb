@@ -1,13 +1,13 @@
 <?php
 require_once("config.php");
-require_once($config["cmslib"]."router.php");
-require_once($config["cmslib"]."request.php"); //ob_start
+require_once($config["lib"]."router.php");
+require_once($config["lib"]."request.php"); //ob_start
 
 $r = new Router();
 //static content
 $r->addRoute("GET","/favicon.ico",function() {//args[0] constain whole match
 	$req=Request::getInstance();
-	$f="../icony/flags-lg/sp-lgflag.gif";
+	$f="./icony/flags-lg/sp-lgflag.gif";
 	if (file_exists($f)) {
 		header("Content-Type: ".make_content_type($f));
 		readfile($f);
@@ -29,7 +29,7 @@ $r->addRoute("GET","/.*(css|js|html)",function() {
 });
 $r->addRoute("GET","/icony/.*",function() {
 	$req=Request::getInstance();
-	$f="..".$req->getval("uri");
+	$f=".".$req->getval("uri");
 	if (file_exists($f)) {
 		header("Content-Type: ".make_content_type($f));
 		readfile($f);
@@ -38,8 +38,9 @@ $r->addRoute("GET","/icony/.*",function() {
 		header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
 	}
 });
+
 $r->addRoute("GET","/ajax\\.js",function() {
-	$f="../ajax.js";
+	$f=".".$req->getval("uri");
 	header("Content-Type: ".make_content_type($f));
 	readfile($f);
 });
@@ -49,7 +50,14 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	global $config;
 	$req=Request::getInstance();
 	$args = func_get_args();
-	$func = strtolower($args[1]);
+	//logstr("args = ".print_r($args, true));
+	if (sizeof($args) > 1) {
+		$func = strtolower($args[1]);
+	}
+	else {
+		logstr("err: no args");
+		$func = "-";
+	}
 	$f = "./api/".$func.".php";
 	if (!file_exists($f)) {
 		//header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
@@ -58,6 +66,7 @@ $r->addRoute("","/api/(\\w+).*",function() {
 	}
 	require_once($f);
 
+	logstr("api: ".$func);
 	$func = "api_".$func;
 	if ($func=="api_translate") {
 		$lang=$req->getval("req.lang");
@@ -72,6 +81,7 @@ $r->addRoute("","/api/(\\w+).*",function() {
 		if ($lang=="pl") $lang="pol";
 		else if ($lang=="en") $lang="eng";
 		else $lang="spa";
+		logstr("autocomplete: lang=".$lang." phrase=".$req->getval("req.phrase"));
 		$func($lang,$req->getval("req.phrase"));
 	}
 	$c = ob_get_contents();
@@ -86,16 +96,10 @@ $r->addRoute("","/api/(\\w+).*",function() {
 $r->addRoute("GET","/.*",function() {
 	global $config;
 	require_once("espdb.php");
-	try{
-		$a = new EspDB();
-		$a->initialize();
-		$a->process();
-		unset($a);
-	}
-	catch(Exception $e)
-	{
-		echo "Exception: ".$e->getMessage().";";
-	}
+	$a = new EspDB();
+	$a->initialize();
+	$a->process();
+	unset($a);
 	$t = new TemplateEngine();
 	$t->load("espdb.tpl");
 });

@@ -1,8 +1,8 @@
 <?php
 require_once("config.php");
-require_once($config["cmslib"]."modules.php");
-require_once($config["cmslib"]."application.php");
-require_once($config["cmslib"]."model.php");
+require_once($config["lib"]."modules.php");
+require_once($config["lib"]."application.php");
+require_once($config["lib"]."model.php");
 
 define('DEFAULT_TAB',"");
 
@@ -27,14 +27,18 @@ class EspDB extends Application {
 			"word"=>"",
 			"conjugation"=>"",
 			"tense"=>"",
+			"rel_es_pl"=>"",
+			"rel_es_en"=>"",
 		);
 		$tabs=$db->tables();
 		if ($tabs===false) {
+			logstr("dberr".$db->errmsg());
 			$this->addval("error","DB:".$db->errmsg());
 			return false;
 		}
 
-		while (list($t,$v)=each($reqtabs)) {
+		//logstr("reqtabs:".print_r($reqtabs,true));
+		foreach ($reqtabs as $t => $v) {
 			if (in_array($t,$tabs)) continue; // if tables exists do nothing
 			$sql = "sql/".$t.".sql";
 			if (file_exists($sql)) {
@@ -43,7 +47,7 @@ class EspDB extends Application {
 			}
 			else if (!empty($v)) {
 				$r=$db->tabcreate($t,$v);
-				if ($r===false) {$this->addval("error","DB create($t):".$db->errmsg());}
+				if ($r===false) { $this->addval("error","DB create($t):".$db->errmsg()); }
 			}
 			else {
 				$this->addval("error","no file: ".$sql);

@@ -26,7 +26,7 @@
 		<br>
 		<span id="search-complete">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
-			<div id="loading" class="loading"><img src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
+			<div id="loading" class="loading"><img width="30px" src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
 		</span>
 		<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
@@ -34,7 +34,7 @@
 	</div>
 	<div id="source" class="source right"></div>
 	<a id="clearlog" href="javascript:clearlog();" style="display:none;">clear log</a>
-	<div id="searching" class="abs center nodisp"><img src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
+	<div id="searching" class="abs center nodisp"><img width="20px" src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
 	<div id="result" class="result"></div>
 	<div id="errors" class="log"></div>
 </div>
@@ -88,6 +88,8 @@ function setupPhraseInput(ph) {
 function translateResponse(obj) {
 	var dbsrc = '';
 	if (obj.source) dbsrc='source: '+obj.source;
+	if (obj.tr === undefined)
+		throw new Error(obj.error);
 
 	var tr = obj.tr;
 	var txt='';
@@ -138,7 +140,8 @@ var onTranslateReady = function(rc,tx) {
 		//log(obj);
 		translateResponse(obj);
 		obj.source='esp-storage';
-		saveLocal(obj.from+'/'+$('phrase').value,obj);
+		if (obj.tr.length > 0)
+			saveLocal(obj.from+'/'+$('phrase').value,obj);
 	}catch(e) {
 		log(e.stack);
 		if (e instanceof SyntaxError) log('JSON='+tx);
