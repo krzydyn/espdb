@@ -4,11 +4,11 @@
   <title><%val("cfg.sitetitle")%></title>
   <meta http-equiv="Content-type" content="text/html;charset=<%val("charset")%>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/style.css" type="text/css"/>
-  <link rel="stylesheet" href="<%val("cfg.rooturl")%>css/espdb.css" type="text/css"/>
-  <script async src="<%val("cfg.rooturl")%>ajax.js"></script>
-  <script async src="<%val("cfg.rooturl")%>js/storage.js"></script>
-  <script async src="<%val("cfg.rooturl")%>js/misc.js"></script>
+  <link rel="stylesheet" href="<%val("rooturl")%>css/style.css" type="text/css"/>
+  <link rel="stylesheet" href="<%val("rooturl")%>css/espdb.css" type="text/css"/>
+  <script async src="<%val("rooturl")%>wwwlib/js/ajax.js"></script>
+  <script async src="<%val("rooturl")%>wwwlib/js/storage.js"></script>
+  <script async src="<%val("rooturl")%>wwwlib/js/misc.js"></script>
 </head>
 <body onload="onBodyLoad()" >
 <h1><%val("cfg.title")%></h1>
@@ -26,7 +26,7 @@
 		<br>
 		<span id="search-complete">
 			<input id="phrase" type="text" size="15" name="phrase" value="<%val("req.phrase")%>" placeholder="Start typing here" autocomplete="off">
-			<div id="loading" class="loading"><img width="30px" src="<%val("cfg.rooturl")%>icony/loading_small.gif"></div>
+			<div id="loading" class="loading"><img width="30px" src="<%val("rooturl")%>icony/loading_small.gif"></div>
 			<div class="autocomplete"></div>
 		</span>
 		<span class="button"><input type="submit" value="search" onclick="javascript:translateWord();return false;"></span>
@@ -34,7 +34,7 @@
 	</div>
 	<div id="source" class="source right"></div>
 	<a id="clearlog" href="javascript:clearlog();" style="display:none;">clear log</a>
-	<div id="searching" class="abs center nodisp"><img width="20px" src="<%val("cfg.rooturl")%>icony/loading.gif"></div>
+	<div id="searching" class="abs center nodisp"><img width="20px" src="<%val("rooturl")%>icony/loading.gif"></div>
 	<div id="result" class="result"></div>
 	<div id="errors" class="log"></div>
 </div>
@@ -115,7 +115,7 @@ function translateResponse(obj) {
 					txt+='<a href="'+href+'">'+data[i].text+'</a>'
 					if (canspeak) {
 						href = 'javascript:sayit(\''+data[i].lang+'\',\''+data[i].text+'\')';
-						txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="<%val("cfg.rooturl")%>icony/speaker6.png" align="top"></a>'
+						txt+=' &nbsp; <a href="'+href+'"><img height="21px" src="<%val("rooturl")%>icony/speaker6.png" align="top"></a>'
 					}
 					txt+='</td></tr>';
 					++cnt;
@@ -183,10 +183,10 @@ var onAutoCompleteReady = function(rc,tx) {
 		if (e instanceof SyntaxError) log('JSON='+tx);
 		errtxt='SyntaxError';
 	}
-	var ac = $('.autocomplete');
-	ac[0].style.display='block';
-	ac[0].style.width=$('phrase').getBoundingClientRect().width+'px';
-	ac[0].innerHTML = txt;
+	var ac = $('.autocomplete')[0];
+	ac.style.display='block';
+	ac.style.width=$('phrase').getBoundingClientRect().width+'px';
+	ac.innerHTML = txt;
 	var err = $('errors');
 	if (err) {
 		if (errtxt) err.innerHTML = errtxt;
@@ -204,7 +204,7 @@ function updateAutocomplete() {
 	}
 	var w = encodeURIComponent(phrase); //escape %,&,=,sp
 	var u='lang='+lang+'&phrase='+w;
-	ajax.async('get','<%val("cfg.rooturl")%>api/autocomplete?'+u,onAutoCompleteReady);
+	ajax.async('get','<%val("rooturl")%>api/autocomplete?'+u,onAutoCompleteReady);
 }
 function translateWord() {
 	$('.autocomplete')[0].style.display='none';
@@ -227,20 +227,20 @@ function translateWord() {
 		obj.source = 'esp-storage';
 		translateResponse(obj);
 		var w = encodeURIComponent(phrase); //escape %,&,=
-		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
+		u='<%val("rooturl")%>'+lang+'/'+w;
 	}
 	else if (phrase) {
 		$('searching').style.display='block';
 		document.title = 'KrzychoTeka - '+phrase;
 		var w = encodeURIComponent(phrase); //escape %,&,=
 		u='lang='+lang+'&phrase='+w;
-		ajax.async('get','<%val("cfg.rooturl")%>api/translate?'+u,onTranslateReady);
-		u='<%val("cfg.rooturl")%>'+lang+'/'+w;
+		ajax.async('get','<%val("rooturl")%>api/translate?'+u,onTranslateReady);
+		u='<%val("rooturl")%>'+lang+'/'+w;
 	}
 	else {
 		document.title = 'KrzychoTeka';
 		translateResponse(JSON.parse('{"tr":[]}'));
-		u='<%val("cfg.rooturl")%>';
+		u='<%val("rooturl")%>';
 	}
 	//title arg is ignored
 	if (arguments.length>0) history.pushState(state, '', u);

@@ -1,8 +1,8 @@
 <?php
 require_once("config.php");
-require_once($config["lib"]."modules.php");
-require_once($config["lib"]."application.php");
-require_once($config["lib"]."model.php");
+require_once($config["lib"]."php/modules.php");
+require_once($config["lib"]."php/application.php");
+require_once($config["lib"]."php/model.php");
 
 define('DEFAULT_TAB',"");
 

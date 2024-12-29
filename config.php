@@ -3,6 +3,8 @@ date_default_timezone_set("Europe/Warsaw");
 $config=array();
 $config["appname"]="espanol";
 
+$_SERVER["HTTP_HOST"]="localhost";
+
 if ($_SERVER["HTTP_HOST"]=="localhost"){
 	error_reporting(E_ALL);
 	ini_set('display_errors','On');
@@ -14,9 +16,9 @@ else {
 }
 
 // paths setup
-$config["lib"]=strtr(dirname(__FILE__),"\\","/")."/../wwwlib/";
 $config["rootdir"]=strtr(dirname(__FILE__),"\\","/")."/"; //path to the site files
-$config["rooturl"]=dirname($_SERVER["PHP_SELF"])."/"; //url to the site
+$config["lib"]=$config["rootdir"]."wwwlib/";
+
 $config["cachedir"]="cache/"; //relative to rootdir
 $config["templatedir"]=array($config["rootdir"]."templates/");
 $config["templateexpired"]="force"; //modtime

@@ -1,5 +1,5 @@
 <?php
-require_once($config["lib"]."rest.php");
+require_once($config["lib"]."php/rest.php");
 function langCodeShort($lang) {
 	switch ($lang) {
 		case "spa": return "es";

@@ -1,5 +1,5 @@
 <?php
-require_once($config["lib"]."rest.php");
+require_once($config["lib"]."php/rest.php");
 function langCodeShort($lang) {
 	switch ($lang) {
 		case "spa": return "es";
@@ -68,24 +68,31 @@ function api_translate($lang_src,$lang_dst,$phrase) {
 	}
 	logstr("not found in db, trying glosbe");
 
-	//3. get translation from external
-	$r=restApi("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	//3. get translation from external source
+	// https://en.glosbe.com/help/api
+	// -> Due to the long lasting DDoS attack to the Glosbe API from millions of IPs we have to shut down the service.
+	// $r=restApi("GET","https://glosbe.com/gapi/translate",array("from"=>$lang_src,"dest"=>$lang_dst,"phrase"=>$phrase,"format"=>"json"));
+	$r="";
 
 	logstr("glosbe resp: ".print_r($r, true));
-	//4. reformat
+	//4. parse resp as json
 	$o = json_decode($r);
 	$tr = array();
 	$a = array();
-	foreach ($o->tuc as $item) {
-		if (!property_exists($item,"phrase")) continue;
-		$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
+	if ($o && property_exists($o, 'tuc')) {
+		foreach ($o->tuc as $item) {
+			if (!property_exists($item,"phrase")) continue;
+			$a[] = array("lang"=>$item->phrase->language, "text"=>$item->phrase->text);
+		}
 	}
 	if (sizeof($a) > 0) {
 		$tr[] = array("phrase"=>$phrase, "data"=>$a);
 		//5. save to sqldb
 		addTranslation($short_src,$short_dst,$tr[0]);
+		$req->setval("result",array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
+		return ;
 	}
-	$req->setval("result",array("source"=>"<a href=\"https://glosbe.com\">glosbe.com</a>","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
+	$req->setval("result",array("source"=>"db","from"=>$short_src,"dest"=>$short_dst,"tr"=>$tr));
 }
 
 function getId($db,$w,$lang) {

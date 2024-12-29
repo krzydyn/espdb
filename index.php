@@ -1,7 +1,7 @@
 <?php
 require_once("config.php");
-require_once($config["lib"]."router.php");
-require_once($config["lib"]."request.php"); //ob_start
+require_once($config["lib"]."php/router.php");
+require_once($config["lib"]."php/request.php"); //ob_start
 
 $r = new Router();
 //static content
@@ -109,5 +109,6 @@ $r->addRoute("","",function() {
 	header($req->getval("srv.SERVER_PROTOCOL")." 404 Not Found", true, 404);
 });
 
+logstr("processing uri ".Request::getInstance()->getval("uri"));
 $r->route(Request::getInstance()->getval("method"), Request::getInstance()->getval("uri"));
 ?>
